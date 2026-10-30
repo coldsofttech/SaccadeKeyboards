@@ -1,7 +1,7 @@
 {
-  "name": "@scope/example-react-package",
+  "name": "@coldsofttech/saccade-keyboards",
   "version": "0.1.0",
-  "description": "Example React package. Replace this with your own description.",
+  "description": "On-screen keyboards for React. Pick a language, or build your own layout from data.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -14,6 +14,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
     },
     "./style.css": "./dist/style.css"
   },
@@ -29,12 +33,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/coldsofttech/react-SaccadeKeyboards.git",
-    "directory": "packages/example-react-package"
+    "url": "git+https://github.com/coldsofttech/SaccadeKeyboards.git",
+    "directory": "packages/saccade-keyboards"
   },
-  "homepage": "https://github.com/coldsofttech/react-SaccadeKeyboards#readme",
+  "homepage": "https://github.com/coldsofttech/SaccadeKeyboards#readme",
   "bugs": {
-    "url": "https://github.com/coldsofttech/react-SaccadeKeyboards/issues"
+    "url": "https://github.com/coldsofttech/SaccadeKeyboards/issues"
   },
   "scripts": {
     "build": "vite build && npm run build:types",

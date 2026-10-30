@@ -1,9 +1,16 @@
 [
   {
-    "name": "@scope/example-react-package",
-    "path": "packages/example-react-package/dist/index.js",
+    "name": "@coldsofttech/saccade-keyboards",
+    "path": "packages/saccade-keyboards/dist/index.js",
     "import": "*",
-    "limit": "2 kB",
+    "limit": "4 kB",
+    "ignore": ["react", "react-dom"]
+  },
+  {
+    "name": "@coldsofttech/saccade-keyboards/core",
+    "path": "packages/saccade-keyboards/dist/core/index.js",
+    "import": "*",
+    "limit": "4 kB",
     "ignore": ["react", "react-dom"]
   }
 ]

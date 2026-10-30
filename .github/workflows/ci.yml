@@ -71,8 +71,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run check:packages
-      - name: Build demo against the built packages
-        run: npm run build --workspace examples/demo
       - name: Bundle size
         run: npm run size
 

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: 'src/index.js',
+      entry: { index: 'src/index.js', 'core/index': 'src/core/index.js' },
       formats: ['es'],
     },
     sourcemap: true,

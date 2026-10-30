@@ -1,42 +1,38 @@
-# react-SaccadeKeyboards
+# Saccade Keyboards
 
-A ready-to-use starting point for public React component and hook libraries (React 18 and 19). It comes with community files, issue and pull request templates, automated dependency updates, security checks, testing, and publishing to npm already in place.
+On-screen keyboards for React apps (React 18 and 19). Show a keyboard for a language next to any text field, with light and dark themes and full screen reader and keyboard support.
 
 ## What you get
 
-- One or more npm packages in a single repository, each built and tested on its own
-- An example React package (component, hook, styles, tests) and a small demo app to copy from
-- Checks that React is never bundled, plus bundle-size limits
-- Automatic checks on every pull request across Node 22, 24 and 26
-- Publishing to npm when you create a GitHub release, with no stored tokens
-- Contribution, conduct, support and security-reporting guidelines
-- Issue forms and a pull request template
-- Automated dependency updates, dependency review and weekly vulnerability checks
-- Secret scanning before every commit
+- A keyboard you pick by language, or build from your own layout
+- Light and dark themes, or your own colours
+- Works with any input: the keyboard reports key presses and you decide where the text goes
+- Keys that screen readers can read, and focus that stays in your text field
+- Right-to-left and complex scripts, with a dotted circle shown for signs that sit on a letter
+- Small bundle: React is never included, and each language is its own package
 
-## Getting started
+## Install
 
-1. Click **Use this template** on GitHub and create your new repository.
-2. Run the **Init** workflow from the Actions tab and merge the pull request it opens. This fills in your owner and repository name. Then delete `.github/workflows/init.yml`.
-3. Rename `packages/example-react-package`, set your npm scope (replace `@scope`) and fill in the details in its `package.json`. Replace the example component, and update `.size-limit.json` and the demo imports.
-4. Add your contact details in `CODE_OF_CONDUCT.md` and replace this description with your own.
-5. Apply the repository protections and set up npm publishing by following the [setup guide](docs/repo-setup.md).
-6. Install the checks that run on each commit: `npm ci && pip install pre-commit && pre-commit install --hook-type pre-commit --hook-type post-commit`.
-
-## Using a package
-
-```jsx
-import { ExampleComponent } from '@scope/example-react-package';
-import '@scope/example-react-package/style.css';
-
-<ExampleComponent name="World" />;
+```bash
+npm install @coldsofttech/saccade-keyboards
 ```
 
 React and `react-dom` 18 or 19 must be installed in your app.
 
+## Use it
+
+```jsx
+import { Keyboard } from '@coldsofttech/saccade-keyboards';
+import '@coldsofttech/saccade-keyboards/style.css';
+
+<Keyboard language="en" onKey={(key) => console.log(key)} theme="dark" />;
+```
+
+Each language is installed separately, for example `@coldsofttech/saccade-en`. If one is missing, the keyboard tells you which package to install. See the [package guide](packages/saccade-keyboards/README.md) for all options, typing into a field, and building your own keyboard.
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately as described in [SECURITY.md](SECURITY.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately as described in [SECURITY.md](SECURITY.md). Technical documentation is in [docs](docs/README.md).
 
 ## License
 
