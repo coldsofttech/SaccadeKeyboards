@@ -8,6 +8,7 @@ import { createLayout as createSpanish } from '@coldsofttech/saccade-es';
 import { createLayout as createFrench } from '@coldsofttech/saccade-fr';
 import { createLayout as createHindi } from '@coldsofttech/saccade-hi';
 import { createLayout as createTelugu } from '@coldsofttech/saccade-te';
+import { createLayout as createUrdu } from '@coldsofttech/saccade-ur';
 
 const LAYOUTS = new Map([
   ['English', createEnglish],
@@ -16,6 +17,7 @@ const LAYOUTS = new Map([
   // Hindi has no regions: the keyboard is InScript or phonetic and the region picks the digits.
   ['Hindi', createHindi],
   ['Telugu', createTelugu],
+  ['Urdu', createUrdu],
 ]);
 const LANGUAGES = [...LAYOUTS.keys()];
 const REGIONS = new Map([
@@ -24,6 +26,7 @@ const REGIONS = new Map([
   ['French', ['FR', 'BE', 'CA', 'CH']],
   ['Hindi', ['latin', 'devanagari']],
   ['Telugu', ['latin', 'telugu']],
+  ['Urdu', ['latin', 'urdu']],
 ]);
 // `native` is the order of the keyboard of the region: QWERTY, AZERTY and so on.
 const ARRANGEMENTS = ['native', 'alphabetical'];

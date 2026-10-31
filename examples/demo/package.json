@@ -14,6 +14,7 @@
     "@coldsofttech/saccade-hi": "*",
     "@coldsofttech/saccade-keyboards": "*",
     "@coldsofttech/saccade-te": "*",
+    "@coldsofttech/saccade-ur": "*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
