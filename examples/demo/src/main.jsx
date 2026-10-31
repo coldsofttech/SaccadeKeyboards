@@ -6,20 +6,25 @@ import '@coldsofttech/saccade-keyboards/style.css';
 import { createLayout as createEnglish } from '@coldsofttech/saccade-en';
 import { createLayout as createSpanish } from '@coldsofttech/saccade-es';
 import { createLayout as createFrench } from '@coldsofttech/saccade-fr';
+import { createLayout as createHindi } from '@coldsofttech/saccade-hi';
 
 const LAYOUTS = new Map([
   ['English', createEnglish],
   ['Spanish', createSpanish],
   ['French', createFrench],
+  // Hindi has no regions: the keyboard is InScript or phonetic and the region picks the digits.
+  ['Hindi', createHindi],
 ]);
 const LANGUAGES = [...LAYOUTS.keys()];
 const REGIONS = new Map([
   ['English', ['US', 'GB', 'AU', 'CA', 'IN']],
   ['Spanish', ['ES', 'MX', 'AR', 'CO', 'US', 'LATAM']],
   ['French', ['FR', 'BE', 'CA', 'CH']],
+  ['Hindi', ['latin', 'devanagari']],
 ]);
 // `native` is the order of the keyboard of the region: QWERTY, AZERTY and so on.
 const ARRANGEMENTS = ['native', 'alphabetical'];
+const HINDI_ARRANGEMENTS = ['inscript', 'phonetic'];
 const THEMES = ['light', 'dark'];
 const FONTS = ['native', 'sans', 'serif', 'mono'];
 
@@ -49,6 +54,8 @@ function Demo() {
   const [currencypad, setCurrencypad] = useState(false);
 
   // A region from the other language falls back to that language's first one.
+  const arrangements = language === 'Hindi' ? HINDI_ARRANGEMENTS : ARRANGEMENTS;
+  const letters = arrangements.includes(arrangement) ? arrangement : arrangements[0];
   const regions = REGIONS.get(language);
   const region = regions.includes(chosenRegion) ? chosenRegion : regions[0];
 
@@ -65,12 +72,7 @@ function Demo() {
       <p>Click in the field, then press keys on the on-screen keyboard.</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
         <Select label="Language" value={language} options={LANGUAGES} onChange={setLanguage} />
-        <Select
-          label="Letters"
-          value={arrangement}
-          options={ARRANGEMENTS}
-          onChange={setArrangement}
-        />
+        <Select label="Letters" value={letters} options={arrangements} onChange={setArrangement} />
         <Select label="Region" value={region} options={regions} onChange={setRegion} />
         <Select label="Theme" value={theme} options={THEMES} onChange={setTheme} />
         <Select label="Font" value={font} options={FONTS} onChange={setFont} />
@@ -106,7 +108,7 @@ function Demo() {
       />
       {shown ? (
         <Keyboard
-          layout={LAYOUTS.get(language)(arrangement === 'native' ? undefined : arrangement, region)}
+          layout={LAYOUTS.get(language)(letters === 'native' ? undefined : letters, region)}
           onKey={onKey}
           onClose={() => setShown(false)}
           theme={theme}
