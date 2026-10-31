@@ -82,14 +82,14 @@ Import `@coldsofttech/saccade-keyboards/style.css` once, then change the look wi
 />
 ```
 
-| Colour       | Where it shows                                  |
-| ------------ | ----------------------------------------------- |
-| `background` | Behind the keys.                                |
-| `key`        | A key.                                          |
-| `keyText`    | The letters on a key.                           |
-| `border`     | The edge of a key.                              |
-| `accent`     | A key that is on, such as Shift or Caps Lock.   |
-| `accentText` | The letters on a key that is on.                |
+| Colour       | Where it shows                                |
+| ------------ | --------------------------------------------- |
+| `background` | Behind the keys.                              |
+| `key`        | A key.                                        |
+| `keyText`    | The letters on a key.                         |
+| `border`     | The edge of a key.                            |
+| `accent`     | A key that is on, such as Shift or Caps Lock. |
+| `accentText` | The letters on a key that is on.              |
 
 **Font and size.** `font` takes `'native'`, `'sans'`, `'serif'`, `'mono'`, or any CSS font list. `fontSize` is in pixels.
 
@@ -102,20 +102,22 @@ Import `@coldsofttech/saccade-keyboards/style.css` once, then change the look wi
 ```jsx
 <div style={{ width: 600 }}>
   <Keyboard language="en" onKey={onKey} />
-</div>
+</div>;
 
-{/* or responsive, centred */}
+{
+  /* or responsive, centred */
+}
 <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
   <Keyboard language="en" onKey={onKey} />
-</div>
+</div>;
 ```
 
 **Minimum width.** Narrower than this the keys are too small for their letters and would overlap, so the keyboard does not shrink below it (at the default `fontSize` of 16):
 
-| Keyboard | Minimum width |
-| -------- | ------------- |
-| Keys only | 430 px |
-| With `numpad` | 600 px |
+| Keyboard      | Minimum width |
+| ------------- | ------------- |
+| Keys only     | 430 px        |
+| With `numpad` | 600 px        |
 
 In a narrower space it keeps this width and runs past the edge, so give it a wide enough element (or let the element scroll sideways on small screens).
 
