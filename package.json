@@ -10,15 +10,14 @@
     "examples/*"
   ],
   "scripts": {
+    "build": "npm run build -w @coldsofttech/saccade-keyboards && npm run build --workspaces --if-present",
     "dev": "npm run dev --workspace examples/demo",
-    "build": "npm run build --workspaces --if-present",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "check:packages": "npm run check:packages --workspaces --if-present",
-    "repo:settings": "node scripts/apply-repo-settings.js",
     "size": "size-limit"
   },
   "devDependencies": {

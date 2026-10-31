@@ -1,7 +1,7 @@
 name: Release
 
 # Publishes to npm when a GitHub release is published, using trusted publishing (no stored tokens).
-# Tag the release as <package name>@<version>, for example @scope/example-react-package@1.0.0.
+# Tag the release as <package name>@<version>, for example @coldsofttech/saccade-keyboards@1.0.0.
 on:
   release:
     types: [published]
@@ -31,6 +31,8 @@ jobs:
           echo "PACKAGE=$package" >> "$GITHUB_ENV"
       - run: npm run build
       - run: npm run check:packages
+      # dist is not in the repository, and npm pack does not create the folder it writes to.
+      - run: mkdir -p dist
       - run: npm pack --workspace "$PACKAGE" --pack-destination dist
       - uses: actions/upload-artifact@v7
         with:
@@ -53,4 +55,5 @@ jobs:
         with:
           name: dist
           path: dist/
-      - run: npm publish dist/*.tgz --provenance --access public
+      # The leading ./ matters: without it npm reads dist/<file> as a GitHub user/repo, not a file.
+      - run: npm publish ./dist/*.tgz --provenance --access public

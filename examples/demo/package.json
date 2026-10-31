@@ -8,7 +8,13 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@scope/example-react-package": "*",
+    "@coldsofttech/saccade-en": "*",
+    "@coldsofttech/saccade-es": "*",
+    "@coldsofttech/saccade-fr": "*",
+    "@coldsofttech/saccade-hi": "*",
+    "@coldsofttech/saccade-keyboards": "*",
+    "@coldsofttech/saccade-te": "*",
+    "@coldsofttech/saccade-ur": "*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

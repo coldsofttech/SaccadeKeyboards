@@ -1,6 +1,16 @@
 # Security
 
-How this template catches security problems, from the editor to a published package. To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+How Saccade Keyboards stays safe next to text that people type, and how security problems are caught, from the editor to a published package. To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+
+## Handling typed text
+
+The keyboard sits next to fields where people may type passwords or private messages, so it keeps to a few rules.
+
+- It reports a key press only through `onKey`. It stores nothing and sends nothing anywhere.
+- It never reads or changes the field. The host app applies the key, for example with `applyKey`.
+- It makes no network requests. A language is a package the app installs and loads, and a layout is plain data that `validateLayout` checks before it is used.
+- Layout text is rendered as text, never as HTML.
+- Styles are scoped CSS modules, so the keyboard cannot restyle the host page.
 
 ## Layers
 

@@ -1,0 +1,43 @@
+{
+  "name": "@coldsofttech/saccade-hi",
+  "version": "0.1.0",
+  "description": "Hindi keyboard layouts (InScript and phonetic) for @coldsofttech/saccade-keyboards.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldsofttech/SaccadeKeyboards.git",
+    "directory": "packages/saccade-hi"
+  },
+  "homepage": "https://github.com/coldsofttech/SaccadeKeyboards#readme",
+  "bugs": {
+    "url": "https://github.com/coldsofttech/SaccadeKeyboards/issues"
+  },
+  "scripts": {
+    "build": "vite build && npm run build:types",
+    "build:types": "tsc -p tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "@coldsofttech/saccade-keyboards": "^0.1.0"
+  }
+}

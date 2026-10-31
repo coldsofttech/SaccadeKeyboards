@@ -1,0 +1,123 @@
+.root {
+  --saccade-background: #f0f0f0;
+  --saccade-key: #ffffff;
+  --saccade-key-text: #242424;
+  --saccade-border: #d1d1d1;
+  --saccade-accent: #0f6cbd;
+  --saccade-accent-text: #ffffff;
+
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+  box-sizing: border-box;
+  /* Narrower than this the keys are too small for their letters and overlap. */
+  min-width: 430px;
+  container-type: inline-size;
+  user-select: none;
+  touch-action: manipulation;
+  background: var(--saccade-background);
+  border-radius: 4px;
+}
+
+/* The number pad needs room of its own. */
+.wide {
+  min-width: 600px;
+}
+
+.keys,
+.numpad {
+  /* One grid of narrow columns; a key covers as many as its width needs (see grid.js). Spacing is
+     a margin on each key, because a column gap would be paid by every one of the columns. */
+  display: grid;
+  grid-template-columns: repeat(120, minmax(0, 1fr));
+}
+
+.main {
+  display: flex;
+  flex: 15 1 0;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.numpad {
+  flex: 4 1 0;
+  min-width: 0;
+}
+
+.dark {
+  --saccade-background: #292929;
+  --saccade-key: #3d3d3d;
+  --saccade-key-text: #ffffff;
+  --saccade-border: #666666;
+  --saccade-accent: #479ef5;
+  --saccade-accent-text: #000000;
+}
+
+.key {
+  position: relative;
+  min-width: 0;
+  margin: 3px;
+  min-height: 44px;
+  padding: 0 2px;
+  /* A long label (such as a layer name) is cut short rather than running over its neighbours. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: inherit;
+  cursor: pointer;
+  color: var(--saccade-key-text);
+  background: var(--saccade-key);
+  border: 1px solid var(--saccade-border);
+  border-radius: 4px;
+}
+
+.key:focus-visible {
+  outline: 2px solid var(--saccade-accent);
+  outline-offset: 1px;
+}
+
+.active {
+  color: var(--saccade-accent-text);
+  background: var(--saccade-accent);
+  border-color: var(--saccade-accent);
+}
+
+/* A key with two characters, such as 1 and !: the one that is typed is plain, the other (the
+   symbol until shift is pressed) is smaller and lighter. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+
+.secondary {
+  font-size: 0.7em;
+  opacity: 0.65;
+}
+
+/* The third character of a key, typed after AltGr, sits in the corner. */
+.altgr {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  font-size: 0.55em;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+/* On a keyboard 800 px wide or less (the box has 5px of padding each side) the keys are too small
+   for a second and third character: they show only the one that is typed, and Shift and AltGr
+   show theirs when pressed. */
+@container (max-width: 790px) {
+  .hint,
+  .altgr {
+    display: none;
+  }
+}
+
+.key:disabled {
+  cursor: default;
+  opacity: 0.45;
+}

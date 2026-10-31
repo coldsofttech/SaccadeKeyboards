@@ -2,6 +2,22 @@ name: Bug report
 description: Report something that is not working as expected
 labels: [bug]
 body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package shows the problem?
+      options:
+        - saccade-keyboards (the component and its options)
+        - saccade-en
+        - saccade-es
+        - saccade-fr
+        - saccade-hi
+        - saccade-te
+        - saccade-ur
+        - Not sure
+    validations:
+      required: true
   - type: textarea
     id: what-happened
     attributes:
@@ -13,18 +29,29 @@ body:
     id: steps
     attributes:
       label: Steps to reproduce
+      description: Include the language, arrangement and region you used, and any options such as `numpad`, `currencypad`, `theme`, `font` or `fontSize`.
       placeholder: |
         1. ...
         2. ...
     validations:
       required: true
   - type: input
+    id: width
+    attributes:
+      label: Keyboard width
+      description: How wide the keyboard was when it happened, for example 480 px. Keys look different below 800 px.
+  - type: input
     id: version
     attributes:
-      label: Version
-      description: Release or commit you are using.
+      label: Package version
+      description: The version of the package, for example 0.1.0.
+  - type: input
+    id: environment
+    attributes:
+      label: React version, browser and device
+      description: For example React 19.1, Chrome 130 on Windows, or Safari on iPhone.
   - type: textarea
     id: logs
     attributes:
       label: Logs or screenshots
-      description: Remove any secrets or personal information first.
+      description: A screenshot of the keyboard helps most. Remove any secrets or personal information first.

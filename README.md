@@ -1,42 +1,94 @@
-# react-SaccadeKeyboards
+# Saccade Keyboards
 
-A ready-to-use starting point for public React component and hook libraries (React 18 and 19). It comes with community files, issue and pull request templates, automated dependency updates, security checks, testing, and publishing to npm already in place.
+[![CI](https://github.com/coldsofttech/SaccadeKeyboards/actions/workflows/ci.yml/badge.svg)](https://github.com/coldsofttech/SaccadeKeyboards/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@coldsofttech/saccade-keyboards.svg)](https://www.npmjs.com/package/@coldsofttech/saccade-keyboards)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![React 18 | 19](https://img.shields.io/badge/react-18%20%7C%2019-61dafb.svg)](https://react.dev)
 
-## What you get
+On-screen keyboards for React apps. Show a keyboard for a language next to any text field, so people can type in their own language on a device that has no keyboard for it. Install only the languages you need.
 
-- One or more npm packages in a single repository, each built and tested on its own
-- An example React package (component, hook, styles, tests) and a small demo app to copy from
-- Checks that React is never bundled, plus bundle-size limits
-- Automatic checks on every pull request across Node 22, 24 and 26
-- Publishing to npm when you create a GitHub release, with no stored tokens
-- Contribution, conduct, support and security-reporting guidelines
-- Issue forms and a pull request template
-- Automated dependency updates, dependency review and weekly vulnerability checks
-- Secret scanning before every commit
+## Why Saccade Keyboards
 
-## Getting started
+- **Laid out like real keyboards.** Number row, tall Enter, Shift, Caps Lock and AltGr, with keys that show both characters (such as `1` and `!`).
+- **Your language, your region.** Keyboards follow the layout people already know, such as QWERTY or AZERTY, and the keyboards of different countries.
+- **Install only what you use.** Each language is its own package and is loaded the first time it is needed.
+- **Works with any input.** The keyboard tells you which key was pressed and you decide where the text goes. The focus and the caret stay in your field.
+- **Light and dark.** Built-in themes, your own colours, and a choice of font and key size.
+- **Fits the space.** On a narrow keyboard (800 px or less) each key shows only the character it types, and Shift and AltGr show the rest when pressed.
+- **Accessible.** Every key can be read by a screen reader and used from the keyboard.
+- **Small.** React is never bundled, and there are no other dependencies.
 
-1. Click **Use this template** on GitHub and create your new repository.
-2. Run the **Init** workflow from the Actions tab and merge the pull request it opens. This fills in your owner and repository name. Then delete `.github/workflows/init.yml`.
-3. Rename `packages/example-react-package`, set your npm scope (replace `@scope`) and fill in the details in its `package.json`. Replace the example component, and update `.size-limit.json` and the demo imports.
-4. Add your contact details in `CODE_OF_CONDUCT.md` and replace this description with your own.
-5. Apply the repository protections and set up npm publishing by following the [setup guide](docs/repo-setup.md).
-6. Install the checks that run on each commit: `npm ci && pip install pre-commit && pre-commit install --hook-type pre-commit --hook-type post-commit`.
+## Languages
 
-## Using a package
+| Package                                           | Language | Layouts                                                         | Regions and digits                |
+| ------------------------------------------------- | -------- | --------------------------------------------------------------- | --------------------------------- |
+| [`@coldsofttech/saccade-en`](packages/saccade-en) | English  | QWERTY (the order of each region) or alphabetical               | US, GB, AU, CA, IN                |
+| [`@coldsofttech/saccade-es`](packages/saccade-es) | Spanish  | The keyboard of each region, or alphabetical                    | ES, MX, AR, CO, US, Latin America |
+| [`@coldsofttech/saccade-fr`](packages/saccade-fr) | French   | The keyboard of each region (AZERTY or QWERTZ), or alphabetical | FR, BE, CA, CH                    |
+| [`@coldsofttech/saccade-hi`](packages/saccade-hi) | Hindi    | InScript or phonetic                                            | Latin or Devanagari digits        |
+| [`@coldsofttech/saccade-te`](packages/saccade-te) | Telugu   | InScript or phonetic                                            | Latin or Telugu digits            |
+| [`@coldsofttech/saccade-ur`](packages/saccade-ur) | Urdu     | Standard or phonetic                                            | Latin or Urdu digits              |
 
-```jsx
-import { ExampleComponent } from '@scope/example-react-package';
-import '@scope/example-react-package/style.css';
+[`@coldsofttech/saccade-keyboards`](packages/saccade-keyboards/README.md) is the main package. It has the `Keyboard` component and loads a language only when needed.
 
-<ExampleComponent name="World" />;
+Need another language or a keyboard from your country? [Ask for it](https://github.com/coldsofttech/SaccadeKeyboards/issues/new/choose), or see [adding a language](docs/adding-a-language.md) if you would like to write it.
+
+## Install
+
+```bash
+npm install @coldsofttech/saccade-keyboards @coldsofttech/saccade-en
 ```
 
-React and `react-dom` 18 or 19 must be installed in your app.
+Add a package for each language you want. React and `react-dom` 18 or 19 must be installed in your app. Use a bundler that understands ES modules and dynamic `import()`, such as Vite, webpack or Rollup.
+
+## Use it
+
+```jsx
+import { Keyboard, registerLanguage } from '@coldsofttech/saccade-keyboards';
+import '@coldsofttech/saccade-keyboards/style.css';
+
+registerLanguage('en', () => import('@coldsofttech/saccade-en'));
+
+<Keyboard language="en" onKey={(key) => console.log(key)} theme="dark" font="native" />;
+```
+
+Each language is installed separately. If one is missing, the keyboard tells you which package to install. To pick a region or an arrangement, use the language package's `createLayout` and pass the result as `layout`:
+
+```jsx
+import { createLayout } from '@coldsofttech/saccade-fr';
+
+<Keyboard layout={createLayout(undefined, 'BE')} onKey={onKey} />;
+```
+
+The [package guide](packages/saccade-keyboards/README.md) covers typing into a field, all the options (theme, font, number pad, currency key), sizing and building your own keyboard.
+
+## Good to know
+
+- **Size:** the keyboard fills the width of the element it sits in. It needs at least 430 px, or 600 px with the number pad.
+- **Narrow keyboards:** at 800 px or less, each key shows only what it types. Press Shift or AltGr to see the other characters.
+- **Right to left and complex scripts:** keys always sit left to right, like the keys on a real keyboard. A dotted circle is shown for signs that sit on a letter.
+- **Client-side only:** the keyboard runs in the browser and sends nothing anywhere.
+
+## Try it
+
+The demo app lets you pick a language, region, theme, font, key size and width, and type into a text box.
+
+```bash
+npm ci
+npm run build
+npm run dev
+```
+
+## Documentation
+
+- The [package guide](packages/saccade-keyboards/README.md) for all options.
+- [CHANGELOG.md](CHANGELOG.md) for what changed.
+- [docs/](docs/README.md) for how the repository works: [architecture](docs/architecture.md), [layout format](docs/layout-format.md), [adding a language](docs/adding-a-language.md), [development](docs/development.md), [security](docs/security.md), [third-party notices](docs/third-party-notices.md) and [repository setup](docs/repo-setup.md).
+- [SUPPORT.md](SUPPORT.md) for where to ask questions and report bugs.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately as described in [SECURITY.md](SECURITY.md).
+Languages and regional layouts are best written with someone who uses the keyboard every day, so native speakers are especially welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately as described in [SECURITY.md](SECURITY.md). Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
