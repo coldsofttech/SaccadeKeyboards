@@ -4,9 +4,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-31
+
 ### Added
 
 - On-screen keyboard for React with a built-in light and dark theme, picked by language or built from your own layout.
+- The keyboard keeps a minimum width (430 px, or 600 px with the number pad) so its keys never overlap.
+- Keyboards 800 px wide or less show only the typed character on each key; Shift and AltGr symbols appear when those keys are pressed.
 - `currencypad` option adds a currency key before the space key that shows a row of currency symbols.
 - Headless hook, a helper to apply key presses to text, and a layout checker for building custom keyboards.
 - English keyboards for the US, GB, AU, CA and IN, Spanish keyboards for Spain, Mexico, Argentina, Colombia, the US and Latin America, and French keyboards for France, Belgium, Canada and Switzerland, with the letters in the order of the region or alphabetical.

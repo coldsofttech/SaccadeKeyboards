@@ -10,10 +10,18 @@
   gap: 10px;
   padding: 5px;
   box-sizing: border-box;
+  /* Narrower than this the keys are too small for their letters and overlap. */
+  min-width: 430px;
+  container-type: inline-size;
   user-select: none;
   touch-action: manipulation;
   background: var(--saccade-background);
   border-radius: 4px;
+}
+
+/* The number pad needs room of its own. */
+.wide {
+  min-width: 600px;
 }
 
 .keys,
@@ -51,7 +59,11 @@
   min-width: 0;
   margin: 3px;
   min-height: 44px;
-  padding: 0;
+  padding: 0 2px;
+  /* A long label (such as a layer name) is cut short rather than running over its neighbours. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font: inherit;
   cursor: pointer;
   color: var(--saccade-key-text);
@@ -88,11 +100,21 @@
 /* The third character of a key, typed after AltGr, sits in the corner. */
 .altgr {
   position: absolute;
-  right: 4px;
-  bottom: 1px;
-  font-size: 0.7em;
+  right: 2px;
+  bottom: 0;
+  font-size: 0.55em;
   line-height: 1;
   opacity: 0.75;
+}
+
+/* On a keyboard 800 px wide or less (the box has 5px of padding each side) the keys are too small
+   for a second and third character: they show only the one that is typed, and Shift and AltGr
+   show theirs when pressed. */
+@container (max-width: 790px) {
+  .hint,
+  .altgr {
+    display: none;
+  }
 }
 
 .key:disabled {

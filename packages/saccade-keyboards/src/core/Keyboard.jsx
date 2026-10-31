@@ -34,6 +34,9 @@ import { CURRENCY_SIGNS, useKeyboard } from './useKeyboard.js';
  * @property {number} [fontSize] The size of the letters on the keys, in pixels (16).
  */
 
+/** The lighter character of a two-character key; a narrow keyboard hides it until it is typed. */
+const hint = `${styles.secondary} ${styles.hint}`;
+
 const TOKENS = new Map([
   ['background', '--saccade-background'],
   ['key', '--saccade-key'],
@@ -154,8 +157,8 @@ export function Keyboard({
             text
           ) : hasSecondCharacter(key) ? (
             <span className={styles.stack} aria-hidden="true">
-              <span className={shift === 'once' ? undefined : styles.secondary}>{key.shift}</span>
-              <span className={shift === 'once' ? styles.secondary : undefined}>{key.value}</span>
+              <span className={shift === 'once' ? undefined : hint}>{key.shift}</span>
+              <span className={shift === 'once' ? hint : undefined}>{key.value}</span>
             </span>
           ) : (
             text
@@ -169,6 +172,8 @@ export function Keyboard({
       );
     });
 
+  const appearance = withFont(themeProps(theme), font);
+
   return (
     // The keys sit where the physical keys are, left to right, whatever way the language reads.
     <div
@@ -176,7 +181,8 @@ export function Keyboard({
       aria-label={label ?? `${layout.name} on-screen keyboard`}
       lang={layout.id}
       dir="ltr"
-      {...withFont(themeProps(theme), font)}
+      {...appearance}
+      className={numpad ? `${appearance.className} ${styles.wide}` : appearance.className}
     >
       <div className={styles.main}>
         {currencypad && currencyOpen && (

@@ -33,6 +33,8 @@ const ARRANGEMENTS = ['native', 'alphabetical'];
 const HINDI_ARRANGEMENTS = ['inscript', 'phonetic'];
 const THEMES = ['light', 'dark'];
 const FONTS = ['native', 'sans', 'serif', 'mono'];
+// The keyboard fills the element it sits in, so the demo sets its width on a wrapper.
+const WIDTHS = ['full', '430 px', '600 px', '800 px', '1000 px'];
 
 function Select({ label, value, options, onChange }) {
   return (
@@ -55,6 +57,7 @@ function Demo() {
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState('native');
   const [fontSize, setFontSize] = useState(20);
+  const [width, setWidth] = useState('full');
   const [shown, setShown] = useState(true);
   const [numpad, setNumpad] = useState(false);
   const [currencypad, setCurrencypad] = useState(false);
@@ -73,7 +76,7 @@ function Demo() {
   };
 
   return (
-    <main style={{ maxWidth: 720, margin: '0 auto', padding: 16, fontFamily: 'system-ui' }}>
+    <main style={{ maxWidth: 1100, margin: '0 auto', padding: 16, fontFamily: 'system-ui' }}>
       <h1>{language} keyboard</h1>
       <p>Click in the field, then press keys on the on-screen keyboard.</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
@@ -82,6 +85,7 @@ function Demo() {
         <Select label="Region" value={region} options={regions} onChange={setRegion} />
         <Select label="Theme" value={theme} options={THEMES} onChange={setTheme} />
         <Select label="Font" value={font} options={FONTS} onChange={setFont} />
+        <Select label="Width" value={width} options={WIDTHS} onChange={setWidth} />
         <label>
           <input type="checkbox" checked={numpad} onChange={(e) => setNumpad(e.target.checked)} />{' '}
           Number pad
@@ -113,16 +117,24 @@ function Demo() {
         onFocus={() => setShown(true)}
       />
       {shown ? (
-        <Keyboard
-          layout={LAYOUTS.get(language)(letters === 'native' ? undefined : letters, region)}
-          onKey={onKey}
-          onClose={() => setShown(false)}
-          theme={theme}
-          font={font}
-          fontSize={fontSize}
-          numpad={numpad}
-          currencypad={currencypad}
-        />
+        <div
+          style={{
+            width: width === 'full' ? undefined : Number.parseInt(width, 10),
+            maxWidth: '100%',
+            overflowX: 'auto',
+          }}
+        >
+          <Keyboard
+            layout={LAYOUTS.get(language)(letters === 'native' ? undefined : letters, region)}
+            onKey={onKey}
+            onClose={() => setShown(false)}
+            theme={theme}
+            font={font}
+            fontSize={fontSize}
+            numpad={numpad}
+            currencypad={currencypad}
+          />
+        </div>
       ) : (
         <button type="button" onClick={() => setShown(true)}>
           Show keyboard
