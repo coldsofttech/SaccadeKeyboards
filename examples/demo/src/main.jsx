@@ -3,8 +3,14 @@ import { createRoot } from 'react-dom/client';
 import { Keyboard } from '@coldsofttech/saccade-keyboards';
 import { applyKey } from '@coldsofttech/saccade-keyboards/core';
 import '@coldsofttech/saccade-keyboards/style.css';
-import { createLayout } from '@coldsofttech/saccade-en';
+import { createLayout as createEnglish } from '@coldsofttech/saccade-en';
+import { createLayout as createSpanish } from '@coldsofttech/saccade-es';
 
+const LAYOUTS = new Map([
+  ['English', createEnglish],
+  ['Spanish', createSpanish],
+]);
+const LANGUAGES = [...LAYOUTS.keys()];
 const ARRANGEMENTS = ['qwerty', 'alphabetical'];
 const THEMES = ['light', 'dark'];
 const FONTS = ['native', 'sans', 'serif', 'mono'];
@@ -24,6 +30,7 @@ function Select({ label, value, options, onChange }) {
 
 function Demo() {
   const field = useRef(null);
+  const [language, setLanguage] = useState('English');
   const [arrangement, setArrangement] = useState('qwerty');
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState('native');
@@ -39,9 +46,10 @@ function Demo() {
 
   return (
     <main style={{ maxWidth: 720, margin: '0 auto', padding: 16, fontFamily: 'system-ui' }}>
-      <h1>English keyboard</h1>
+      <h1>{language} keyboard</h1>
       <p>Click in the field, then press keys on the on-screen keyboard.</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+        <Select label="Language" value={language} options={LANGUAGES} onChange={setLanguage} />
         <Select
           label="Letters"
           value={arrangement}
@@ -70,7 +78,7 @@ function Demo() {
       />
       {shown ? (
         <Keyboard
-          layout={createLayout(arrangement)}
+          layout={LAYOUTS.get(language)(arrangement)}
           onKey={onKey}
           onClose={() => setShown(false)}
           theme={theme}
