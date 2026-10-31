@@ -11,6 +11,8 @@
  * @property {'text'} type
  * @property {string} value What the key types.
  * @property {string} [shift] What it types while shift is on.
+ * @property {string} [capital] What it types while caps lock is on, when that is not the shifted
+ *   character, such as É on the key that types é and 2 with shift (a French keyboard).
  * @property {boolean} [numpad] A key of the number pad, which is off while Num Lock is off.
  * @property {string} [altgr] What it types after the AltGr key, as the third character of a key.
  *   Shift capitalises it when it is a letter.
@@ -57,14 +59,17 @@ const ACTIONS = ['shift', 'caps', 'altgr', 'numlock', 'backspace', 'enter', 'spa
  * Keys that type `normal`, and `shifted` (one character each) while shift is on.
  *
  * @param {string} normal Characters, one per key.
- * @param {string} [shifted] Their shifted characters, in the same order.
+ * @param {string} [shifted] Their shifted characters, in the same order; a space leaves that key
+ *   without one.
  * @returns {TextKey[]} The keys.
  */
 export function keys(normal, shifted = '') {
   const upper = [...shifted];
   return [...normal].map((value, i) => {
     const capital = upper.at(i);
-    return capital ? { type: 'text', value, shift: capital } : { type: 'text', value };
+    return capital && capital !== ' '
+      ? { type: 'text', value, shift: capital }
+      : { type: 'text', value };
   });
 }
 
@@ -112,6 +117,8 @@ const keysOf = ([normal, shifted]) => keys(normal, shifted);
  * @param {boolean} [options.iso] An ISO keyboard (tall Enter, extra key in row 4) rather than ANSI.
  * @param {Record<string, string>} [options.altgr] The third character of keys, by what they type:
  *   `{ 4: '€' }` types a euro after AltGr on the 4 key.
+ * @param {Record<string, string>} [options.capitals] What keys type with caps lock when that is
+ *   not their shifted character, by what they type: `{ é: 'É' }`.
  * @returns {Key[][]} The four rows.
  */
 export function physicalRows({
@@ -123,8 +130,10 @@ export function physicalRows({
   extra4,
   iso = false,
   altgr = {},
+  capitals = {},
 }) {
   const third = new Map(Object.entries(altgr));
+  const capital = new Map(Object.entries(capitals));
   const [top, middle, bottom] = letters;
   const end = keysOf(end2);
   // ANSI has the backslash as a wider last key of row 2 and Enter at the end of row 3.
@@ -150,8 +159,12 @@ export function physicalRows({
   ];
   return rows.map((row) =>
     row.map((key) => {
-      const extra = key.type === 'text' ? third.get(key.value) : undefined;
-      return extra ? { ...key, altgr: extra } : key;
+      if (key.type !== 'text') return key;
+      const extra = third.get(key.value);
+      const upper = capital.get(key.value);
+      return extra || upper
+        ? { ...key, ...(extra && { altgr: extra }), ...(upper && { capital: upper }) }
+        : key;
     }),
   );
 }
@@ -308,6 +321,9 @@ function keyProblems(key, where, layerNames) {
     if (!isText(key.value)) problems.push(`${where}: a text key needs a value`);
     if (key.shift !== undefined && !isText(key.shift)) {
       problems.push(`${where}: shift must be a non-empty string`);
+    }
+    if (key.capital !== undefined && !isText(key.capital)) {
+      problems.push(`${where}: capital must be a non-empty string`);
     }
     if (key.numpad !== undefined && typeof key.numpad !== 'boolean') {
       problems.push(`${where}: numpad must be true or false`);

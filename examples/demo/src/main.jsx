@@ -5,17 +5,21 @@ import { applyKey } from '@coldsofttech/saccade-keyboards/core';
 import '@coldsofttech/saccade-keyboards/style.css';
 import { createLayout as createEnglish } from '@coldsofttech/saccade-en';
 import { createLayout as createSpanish } from '@coldsofttech/saccade-es';
+import { createLayout as createFrench } from '@coldsofttech/saccade-fr';
 
 const LAYOUTS = new Map([
   ['English', createEnglish],
   ['Spanish', createSpanish],
+  ['French', createFrench],
 ]);
 const LANGUAGES = [...LAYOUTS.keys()];
 const REGIONS = new Map([
   ['English', ['US', 'GB', 'AU', 'CA', 'IN']],
   ['Spanish', ['ES', 'MX', 'AR', 'CO', 'US', 'LATAM']],
+  ['French', ['FR', 'BE', 'CA', 'CH']],
 ]);
-const ARRANGEMENTS = ['qwerty', 'alphabetical'];
+// `native` is the order of the keyboard of the region: QWERTY, AZERTY and so on.
+const ARRANGEMENTS = ['native', 'alphabetical'];
 const THEMES = ['light', 'dark'];
 const FONTS = ['native', 'sans', 'serif', 'mono'];
 
@@ -36,7 +40,7 @@ function Demo() {
   const field = useRef(null);
   const [language, setLanguage] = useState('English');
   const [chosenRegion, setRegion] = useState('US');
-  const [arrangement, setArrangement] = useState('qwerty');
+  const [arrangement, setArrangement] = useState('native');
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState('native');
   const [fontSize, setFontSize] = useState(20);
@@ -93,7 +97,7 @@ function Demo() {
       />
       {shown ? (
         <Keyboard
-          layout={LAYOUTS.get(language)(arrangement, region)}
+          layout={LAYOUTS.get(language)(arrangement === 'native' ? undefined : arrangement, region)}
           onKey={onKey}
           onClose={() => setShown(false)}
           theme={theme}

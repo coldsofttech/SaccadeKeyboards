@@ -26,5 +26,12 @@
     "import": "*",
     "limit": "2 kB",
     "ignore": ["@coldsofttech/saccade-keyboards"]
+  },
+  {
+    "name": "@coldsofttech/saccade-fr",
+    "path": "packages/saccade-fr/dist/index.js",
+    "import": "*",
+    "limit": "2 kB",
+    "ignore": ["@coldsofttech/saccade-keyboards"]
   }
 ]

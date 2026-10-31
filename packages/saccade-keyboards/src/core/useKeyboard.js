@@ -40,13 +40,15 @@ const FIXED = {
  * @param {import('./layout.js').TextKey} key The key.
  * @param {boolean} shifted Whether shift is on.
  * @param {boolean} [altGr] Whether AltGr is on.
+ * @param {boolean} [capsLock] Whether caps lock is on, for a key with a `capital` of its own.
  * @returns {string} The character.
  */
-export function typedValue(key, shifted, altGr = false) {
+export function typedValue(key, shifted, altGr = false, capsLock = false) {
   if (altGr && key.altgr) {
     const capital = key.altgr.toUpperCase();
     return shifted && capital.length === key.altgr.length ? capital : key.altgr;
   }
+  if (capsLock && key.capital) return key.capital;
   return shifted && key.shift ? key.shift : key.value;
 }
 
@@ -92,7 +94,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
     if (key.type === 'text' && key.numpad && !numLock) return;
     switch (key.type) {
       case 'text':
-        onKey({ type: 'text', value: typedValue(key, isShifted(key), altGr) });
+        onKey({ type: 'text', value: typedValue(key, isShifted(key), altGr, shift === 'caps') });
         if (shift === 'once') setShift('off');
         setAltGr(false);
         break;
@@ -129,7 +131,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
   /** @param {Key} key @returns {KeyDescription} */
   const describe = (key) => {
     if (key.type === 'text') {
-      const value = typedValue(key, isShifted(key), altGr);
+      const value = typedValue(key, isShifted(key), altGr, shift === 'caps');
       const description = { label: shown(value), name: names.get(value) ?? value };
       return key.numpad ? { ...description, disabled: !numLock } : description;
     }

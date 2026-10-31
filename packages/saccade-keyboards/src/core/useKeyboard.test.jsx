@@ -78,6 +78,19 @@ describe('useKeyboard', () => {
     expect(result.current.altGr).toBe(false);
   });
 
+  it('types the capital of a key with caps lock, and its shifted character with shift', () => {
+    const onKey = vi.fn();
+    const { result } = renderHook(() => useKeyboard({ layout, onKey }));
+    const accent = { type: 'text', value: 'é', shift: '2', capital: 'É' };
+    act(() => result.current.press(caps));
+    act(() => result.current.press(accent));
+    act(() => result.current.press(caps));
+    act(() => result.current.press(shift));
+    act(() => result.current.press(accent));
+    act(() => result.current.press(accent));
+    expect(onKey.mock.calls.map(([key]) => key.value)).toEqual(['É', '2', 'é']);
+  });
+
   it('types a key as usual after AltGr when it has no AltGr character', () => {
     const onKey = vi.fn();
     const { result } = renderHook(() => useKeyboard({ layout, onKey }));

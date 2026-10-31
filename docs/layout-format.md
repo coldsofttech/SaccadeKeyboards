@@ -27,17 +27,17 @@ export const layout = {
 
 A row is a list of keys. `width` is the share of the row a key takes; 1 is an ordinary key. A row always fills the width of the keyboard. `rowSpan` makes a key taller: `{ type: 'enter', rowSpan: 2 }` at the end of a row also covers the row below, which then shares only the space that is left. Use it for a tall Enter at the start or the end of a row.
 
-| Key                                          | What it does                                                                                                 |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `{ type: 'text', value, shift?, altgr? }`    | Types `value`; `shift` while shift is on, or `altgr` after AltGr (capitalised with shift if it is a letter). |
-| `{ type: 'shift' }`                          | Shift: capitals for the next key only.                                                                       |
-| `{ type: 'caps' }`                           | Caps lock: capitals until it is pressed again.                                                               |
-| `{ type: 'numlock' }`                        | Num Lock of the number pad: its `numpad` keys are off while it is off.                                       |
-| `{ type: 'altgr' }`                          | AltGr: the next key types its `altgr` character.                                                             |
-| `{ type: 'space' }`                          | Types a space.                                                                                               |
-| `{ type: 'backspace' }`, `{ type: 'enter' }` | Reported through `onKey` for the app to apply.                                                               |
-| `{ type: 'close' }`                          | Calls `onClose`.                                                                                             |
-| `{ type: 'layer', to, label, name? }`        | Shows another layer and turns shift off.                                                                     |
+| Key                                                 | What it does                                                                                                                                                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{ type: 'text', value, shift?, altgr?, capital? }` | Types `value`; `shift` while shift is on, or `altgr` after AltGr (capitalised with shift if it is a letter), or `capital` while caps lock is on (É on the é key of a French keyboard, which types 2 with shift). |
+| `{ type: 'shift' }`                                 | Shift: capitals for the next key only.                                                                                                                                                                           |
+| `{ type: 'caps' }`                                  | Caps lock: capitals until it is pressed again.                                                                                                                                                                   |
+| `{ type: 'numlock' }`                               | Num Lock of the number pad: its `numpad` keys are off while it is off.                                                                                                                                           |
+| `{ type: 'altgr' }`                                 | AltGr: the next key types its `altgr` character.                                                                                                                                                                 |
+| `{ type: 'space' }`                                 | Types a space.                                                                                                                                                                                                   |
+| `{ type: 'backspace' }`, `{ type: 'enter' }`        | Reported through `onKey` for the app to apply.                                                                                                                                                                   |
+| `{ type: 'close' }`                                 | Calls `onClose`.                                                                                                                                                                                                 |
+| `{ type: 'layer', to, label, name? }`               | Shows another layer and turns shift off.                                                                                                                                                                         |
 
 A sign that only sits on a letter, such as a vowel sign or a virama, is shown on a dotted circle automatically.
 
