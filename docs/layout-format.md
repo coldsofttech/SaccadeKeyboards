@@ -39,6 +39,8 @@ A row is a list of keys. `width` is the share of the row a key takes; 1 is an or
 | `{ type: 'close' }`                                 | Calls `onClose`.                                                                                                                                                                                                 |
 | `{ type: 'layer', to, label, name? }`               | Shows another layer and turns shift off.                                                                                                                                                                         |
 
+The `currencypad` prop of `Keyboard` adds a currency key before every space key at render time, taking 1 unit of the space key's width, so layouts never include it. It shows or hides a row of currency signs above the keys.
+
 A sign that only sits on a letter, such as a vowel sign or a virama, is shown on a dotted circle automatically.
 
 ## Helpers

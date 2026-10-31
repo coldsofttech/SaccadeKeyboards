@@ -41,18 +41,19 @@ function Field() {
 
 ## Props
 
-| Prop       | Meaning                                                                                                                                                                                  |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `language` | The language code, such as `en`. Loaded the first time it is needed.                                                                                                                     |
-| `layout`   | Your own layout instead of `language` (see the layout format in the repository's docs).                                                                                                  |
-| `onKey`    | Called with `{ type: 'text', value }`, `{ type: 'backspace' }` or `{ type: 'enter' }`.                                                                                                   |
-| `onClose`  | Called when the hide key is pressed.                                                                                                                                                     |
-| `theme`    | `'light'` (default), `'dark'`, or colours: `background`, `key`, `keyText`, `border`, `accent`, `accentText`.                                                                             |
-| `label`    | The name of the keyboard for a screen reader.                                                                                                                                            |
-| `font`     | The font of the keys: `'native'` (default, the device's own font), `'sans'`, `'serif'`, `'mono'`.                                                                                        |
-| `numpad`   | Show a number pad beside the keys (false): Num Lock and the operators, the digits, a tall plus and Enter. Num Lock starts on; while it is off the digits and the decimal key do nothing. |
-| `fontSize` | The size of the letters on the keys, in pixels (16).                                                                                                                                     |
-| `fallback` | What to show while a language loads.                                                                                                                                                     |
+| Prop          | Meaning                                                                                                                                                                                  |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`    | The language code, such as `en`. Loaded the first time it is needed.                                                                                                                     |
+| `layout`      | Your own layout instead of `language` (see the layout format in the repository's docs).                                                                                                  |
+| `onKey`       | Called with `{ type: 'text', value }`, `{ type: 'backspace' }` or `{ type: 'enter' }`.                                                                                                   |
+| `onClose`     | Called when the hide key is pressed.                                                                                                                                                     |
+| `theme`       | `'light'` (default), `'dark'`, or colours: `background`, `key`, `keyText`, `border`, `accent`, `accentText`.                                                                             |
+| `label`       | The name of the keyboard for a screen reader.                                                                                                                                            |
+| `font`        | The font of the keys: `'native'` (default, the device's own font), `'sans'`, `'serif'`, `'mono'`.                                                                                        |
+| `numpad`      | Show a number pad beside the keys (false): Num Lock and the operators, the digits, a tall plus and Enter. Num Lock starts on; while it is off the digits and the decimal key do nothing. |
+| `currencypad` | Add a currency key before the space key (false). It shows or hides a row of currency signs above the keys; the rest of the layout stays as it is.                                        |
+| `fontSize`    | The size of the letters on the keys, in pixels (16).                                                                                                                                     |
+| `fallback`    | What to show while a language loads.                                                                                                                                                     |
 
 ## Build your own
 

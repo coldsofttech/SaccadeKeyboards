@@ -10,7 +10,7 @@
     "name": "@coldsofttech/saccade-keyboards/core",
     "path": "packages/saccade-keyboards/dist/core/index.js",
     "import": "*",
-    "limit": "4 kB",
+    "limit": "4.5 kB",
     "ignore": ["react", "react-dom"]
   },
   {

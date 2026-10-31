@@ -24,8 +24,11 @@
   grid-template-columns: repeat(120, minmax(0, 1fr));
 }
 
-.keys {
+.main {
+  display: flex;
   flex: 15 1 0;
+  flex-direction: column;
+  gap: 10px;
   min-width: 0;
 }
 

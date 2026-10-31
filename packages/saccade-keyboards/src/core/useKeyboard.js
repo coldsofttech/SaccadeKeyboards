@@ -31,7 +31,11 @@ const FIXED = {
   enter: { label: '⏎', caption: 'Enter', name: 'Enter' },
   space: { label: '␣', caption: 'space', name: 'Space' },
   close: { label: '⌄', caption: 'Hide', name: 'Hide keyboard' },
+  currency: { label: '$£€', caption: 'Currency', name: 'Currency symbols' },
 };
+
+/** The signs of the currency pad. */
+export const CURRENCY_SIGNS = '$€£¥₹₩₽₺₪₫₱₿¢₴₦₡';
 
 /**
  * What a text key types: its AltGr character after the AltGr key (capitalised while shift is on,
@@ -68,6 +72,7 @@ const shown = (value) => (/^\p{M}$/u.test(value) ? `◌${value}` : value);
  *   shift: 'off' | 'once' | 'caps',
  *   altGr: boolean,
  *   numLock: boolean,
+ *   currencyOpen: boolean,
  *   rows: Key[][],
  *   press: (key: Key) => void,
  *   describe: (key: Key) => KeyDescription,
@@ -78,6 +83,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
   const [shift, setShift] = useState(/** @type {'off' | 'once' | 'caps'} */ ('off'));
   const [altGr, setAltGr] = useState(false);
   const [numLock, setNumLock] = useState(true);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
   // Fall back to the first layer when the layout changes to one without the chosen layer.
   const layers = new Map(Object.entries(layout.layers));
   const layer = layers.has(chosen) ? chosen : [...layers.keys()][0];
@@ -112,6 +118,9 @@ export function useKeyboard({ layout, onKey, onClose }) {
       case 'numlock':
         setNumLock(!numLock);
         break;
+      case 'currency':
+        setCurrencyOpen(!currencyOpen);
+        break;
       case 'caps':
         setShift(shift === 'caps' ? 'off' : 'caps');
         break;
@@ -140,6 +149,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
     if (key.type === 'caps') return { ...FIXED.caps, pressed: shift === 'caps' };
     if (key.type === 'altgr') return { ...FIXED.altgr, pressed: altGr };
     if (key.type === 'numlock') return { ...FIXED.numlock, pressed: numLock };
+    if (key.type === 'currency') return { ...FIXED.currency, pressed: currencyOpen };
     return FIXED[key.type];
   };
 
@@ -148,6 +158,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
     shift,
     altGr,
     numLock,
+    currencyOpen,
     rows: /** @type {Key[][]} */ (layers.get(layer)),
     press,
     describe,

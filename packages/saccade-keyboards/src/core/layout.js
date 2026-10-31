@@ -23,7 +23,7 @@
 
 /**
  * @typedef {object} ActionKey
- * @property {'shift' | 'caps' | 'altgr' | 'numlock' | 'backspace' | 'enter' | 'space' | 'close'} type
+ * @property {'shift' | 'caps' | 'altgr' | 'numlock' | 'currency' | 'backspace' | 'enter' | 'space' | 'close'} type
  * @property {number} [width] Share of the row, 1 being an ordinary key.
  * @property {number} [rowSpan] How many rows tall the key is, such as 2 for an Enter key. It sits at
  *   the start or the end of its row, and the rows below leave room for it.

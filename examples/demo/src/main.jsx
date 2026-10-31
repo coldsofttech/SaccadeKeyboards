@@ -46,6 +46,7 @@ function Demo() {
   const [fontSize, setFontSize] = useState(20);
   const [shown, setShown] = useState(true);
   const [numpad, setNumpad] = useState(false);
+  const [currencypad, setCurrencypad] = useState(false);
 
   // A region from the other language falls back to that language's first one.
   const regions = REGIONS.get(language);
@@ -78,6 +79,14 @@ function Demo() {
           Number pad
         </label>
         <label>
+          <input
+            type="checkbox"
+            checked={currencypad}
+            onChange={(e) => setCurrencypad(e.target.checked)}
+          />{' '}
+          Currency pad
+        </label>
+        <label>
           Key size{' '}
           <input
             type="number"
@@ -104,6 +113,7 @@ function Demo() {
           font={font}
           fontSize={fontSize}
           numpad={numpad}
+          currencypad={currencypad}
         />
       ) : (
         <button type="button" onClick={() => setShown(true)}>

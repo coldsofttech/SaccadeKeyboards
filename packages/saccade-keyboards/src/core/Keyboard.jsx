@@ -1,7 +1,7 @@
 import styles from './Keyboard.module.css';
 import { placeKeys } from './grid.js';
-import { numpadRows } from './layout.js';
-import { useKeyboard } from './useKeyboard.js';
+import { keys, numpadRows } from './layout.js';
+import { CURRENCY_SIGNS, useKeyboard } from './useKeyboard.js';
 
 /** @typedef {import('./layout.js').Layout} Layout */
 /** @typedef {import('./applyKey.js').KeyPress} KeyPress */
@@ -29,6 +29,8 @@ import { useKeyboard } from './useKeyboard.js';
  *   `mono`, or any CSS font-family list, such as `"Atkinson Hyperlegible", sans-serif` ('native').
  * @property {boolean} [numpad] Show a number pad beside the keys (false). Its decimal key types the
  *   `decimal` of the layout.
+ * @property {boolean} [currencypad] Add a currency key before the space key (false). It shows or
+ *   hides a row of currency signs above the keys.
  * @property {number} [fontSize] The size of the letters on the keys, in pixels (16).
  */
 
@@ -79,6 +81,25 @@ function withFont(props, font) {
 }
 
 /**
+ * The rows with a currency key before each space key, which gives up the same width so the row
+ * keeps its length.
+ *
+ * @param {import('./layout.js').Key[][]} rows
+ * @returns {import('./layout.js').Key[][]}
+ */
+const withCurrencyKey = (rows) =>
+  rows.map((row) =>
+    row.flatMap((key) =>
+      key.type === 'space'
+        ? [
+            { type: 'currency', width: 1 },
+            { ...key, width: (key.width ?? 1) - 1 },
+          ]
+        : [key],
+    ),
+  );
+
+/**
  * An on-screen keyboard for a layout. It edits nothing: it says which key was pressed, and
  * whoever uses it types into its own field (see `applyKey`). Pressing a key keeps the focus where
  * it was.
@@ -94,9 +115,14 @@ export function Keyboard({
   label,
   font = 'native',
   numpad = false,
+  currencypad = false,
   fontSize = 16,
 }) {
-  const { rows, shift, altGr, press, describe } = useKeyboard({ layout, onKey, onClose });
+  const { rows, shift, altGr, currencyOpen, press, describe } = useKeyboard({
+    layout,
+    onKey,
+    onClose,
+  });
 
   /** @param {import('./grid.js').PlacedKey[][]} placed */
   const keysOf = (placed) =>
@@ -152,7 +178,16 @@ export function Keyboard({
       dir="ltr"
       {...withFont(themeProps(theme), font)}
     >
-      <div className={styles.keys}>{keysOf(placeKeys(rows))}</div>
+      <div className={styles.main}>
+        {currencypad && currencyOpen && (
+          <div role="group" aria-label="Currency symbols" className={styles.keys}>
+            {keysOf(placeKeys([keys(CURRENCY_SIGNS)]))}
+          </div>
+        )}
+        <div className={styles.keys}>
+          {keysOf(placeKeys(currencypad ? withCurrencyKey(rows) : rows))}
+        </div>
+      </div>
       {numpad && (
         <div role="group" aria-label="Number pad" className={styles.numpad}>
           {keysOf(placeKeys(numpadRows(layout.decimal)))}
