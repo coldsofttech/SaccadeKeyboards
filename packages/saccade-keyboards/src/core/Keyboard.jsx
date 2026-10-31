@@ -1,4 +1,6 @@
 import styles from './Keyboard.module.css';
+import { placeKeys } from './grid.js';
+import { numpadRows } from './layout.js';
 import { useKeyboard } from './useKeyboard.js';
 
 /** @typedef {import('./layout.js').Layout} Layout */
@@ -25,6 +27,8 @@ import { useKeyboard } from './useKeyboard.js';
  * @property {string} [label] The name of the keyboard for a screen reader.
  * @property {string} [font] The font of the keys: `native` (the device's own font), `sans`, `serif`,
  *   `mono`, or any CSS font-family list, such as `"Atkinson Hyperlegible", sans-serif` ('native').
+ * @property {boolean} [numpad] Show a number pad beside the keys (false). Its decimal key types the
+ *   `decimal` of the layout.
  * @property {number} [fontSize] The size of the letters on the keys, in pixels (16).
  */
 
@@ -57,6 +61,16 @@ function themeProps(theme) {
 }
 
 /**
+ * Whether a key has a second character of its own, like the ! above the 1, rather than just the
+ * capital of a letter.
+ *
+ * @param {import('./layout.js').Key} key
+ * @returns {key is import('./layout.js').TextKey}
+ */
+const hasSecondCharacter = (key) =>
+  key.type === 'text' && key.shift !== undefined && key.shift !== key.value.toUpperCase();
+
+/**
  * @param {{ className: string, style?: Record<string, string> }} props Theme props.
  * @param {string} font The `font` prop.
  */
@@ -79,9 +93,55 @@ export function Keyboard({
   theme = 'light',
   label,
   font = 'native',
+  numpad = false,
   fontSize = 16,
 }) {
-  const { rows, shift, press, describe } = useKeyboard({ layout, onKey, onClose });
+  const { rows, shift, altGr, press, describe } = useKeyboard({ layout, onKey, onClose });
+
+  /** @param {import('./grid.js').PlacedKey[][]} placed */
+  const keysOf = (placed) =>
+    placed.flat().map(({ key, column, columnSpan, row, rowSpan }, k) => {
+      const { label: text, caption, name, pressed, disabled } = describe(key);
+      return (
+        <button
+          key={k}
+          type="button"
+          aria-label={name}
+          aria-pressed={pressed}
+          disabled={disabled}
+          className={pressed ? `${styles.key} ${styles.active}` : styles.key}
+          style={{
+            fontSize,
+            gridColumn: `${column} / span ${columnSpan}`,
+            gridRow: `${row} / span ${rowSpan}`,
+          }}
+          // Keep the focus (and the caret) in the field being typed into.
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => press(key)}
+        >
+          {caption ? (
+            <span className={styles.stack} aria-hidden="true">
+              <span>{text}</span>
+              <span className={styles.secondary}>{caption}</span>
+            </span>
+          ) : altGr && key.type === 'text' && key.altgr ? (
+            text
+          ) : hasSecondCharacter(key) ? (
+            <span className={styles.stack} aria-hidden="true">
+              <span className={shift === 'once' ? undefined : styles.secondary}>{key.shift}</span>
+              <span className={shift === 'once' ? styles.secondary : undefined}>{key.value}</span>
+            </span>
+          ) : (
+            text
+          )}
+          {key.type === 'text' && key.altgr && !altGr && (
+            <span className={styles.altgr} aria-hidden="true">
+              {key.altgr}
+            </span>
+          )}
+        </button>
+      );
+    });
 
   return (
     // The keys sit where the physical keys are, left to right, whatever way the language reads.
@@ -92,32 +152,12 @@ export function Keyboard({
       dir="ltr"
       {...withFont(themeProps(theme), font)}
     >
-      {rows.map((row, r) => (
-        <div key={r} className={styles.row}>
-          {row.map((key, k) => {
-            const { label: text, name, pressed } = describe(key);
-            return (
-              <button
-                key={k}
-                type="button"
-                aria-label={name}
-                aria-pressed={pressed}
-                className={
-                  key.type === 'shift' && shift !== 'off'
-                    ? `${styles.key} ${styles.active}`
-                    : styles.key
-                }
-                style={{ fontSize, flexGrow: key.width ?? 1 }}
-                // Keep the focus (and the caret) in the field being typed into.
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => press(key)}
-              >
-                {text}
-              </button>
-            );
-          })}
+      <div className={styles.keys}>{keysOf(placeKeys(rows))}</div>
+      {numpad && (
+        <div role="group" aria-label="Number pad" className={styles.numpad}>
+          {keysOf(placeKeys(numpadRows(layout.decimal)))}
         </div>
-      ))}
+      )}
     </div>
   );
 }

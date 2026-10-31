@@ -17,14 +17,14 @@
     "name": "@coldsofttech/saccade-en",
     "path": "packages/saccade-en/dist/index.js",
     "import": "*",
-    "limit": "1 kB",
+    "limit": "2 kB",
     "ignore": ["@coldsofttech/saccade-keyboards"]
   },
   {
     "name": "@coldsofttech/saccade-es",
     "path": "packages/saccade-es/dist/index.js",
     "import": "*",
-    "limit": "1 kB",
+    "limit": "2 kB",
     "ignore": ["@coldsofttech/saccade-keyboards"]
   }
 ]

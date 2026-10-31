@@ -7,14 +7,31 @@
   --saccade-accent-text: #ffffff;
 
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px;
+  gap: 10px;
+  padding: 5px;
   box-sizing: border-box;
   user-select: none;
   touch-action: manipulation;
   background: var(--saccade-background);
   border-radius: 4px;
+}
+
+.keys,
+.numpad {
+  /* One grid of narrow columns; a key covers as many as its width needs (see grid.js). Spacing is
+     a margin on each key, because a column gap would be paid by every one of the columns. */
+  display: grid;
+  grid-template-columns: repeat(120, minmax(0, 1fr));
+}
+
+.keys {
+  flex: 15 1 0;
+  min-width: 0;
+}
+
+.numpad {
+  flex: 4 1 0;
+  min-width: 0;
 }
 
 .dark {
@@ -26,14 +43,10 @@
   --saccade-accent-text: #000000;
 }
 
-.row {
-  display: flex;
-  gap: 6px;
-}
-
 .key {
-  flex: 1 1 0;
+  position: relative;
   min-width: 0;
+  margin: 3px;
   min-height: 44px;
   padding: 0;
   font: inherit;
@@ -53,4 +66,33 @@
   color: var(--saccade-accent-text);
   background: var(--saccade-accent);
   border-color: var(--saccade-accent);
+}
+
+/* A key with two characters, such as 1 and !: the one that is typed is plain, the other (the
+   symbol until shift is pressed) is smaller and lighter. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+
+.secondary {
+  font-size: 0.7em;
+  opacity: 0.65;
+}
+
+/* The third character of a key, typed after AltGr, sits in the corner. */
+.altgr {
+  position: absolute;
+  right: 4px;
+  bottom: 1px;
+  font-size: 0.7em;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.key:disabled {
+  cursor: default;
+  opacity: 0.45;
 }

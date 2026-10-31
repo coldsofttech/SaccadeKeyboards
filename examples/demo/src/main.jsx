@@ -11,6 +11,10 @@ const LAYOUTS = new Map([
   ['Spanish', createSpanish],
 ]);
 const LANGUAGES = [...LAYOUTS.keys()];
+const REGIONS = new Map([
+  ['English', ['US', 'GB', 'AU', 'CA', 'IN']],
+  ['Spanish', ['ES', 'MX', 'AR', 'CO', 'US', 'LATAM']],
+]);
 const ARRANGEMENTS = ['qwerty', 'alphabetical'];
 const THEMES = ['light', 'dark'];
 const FONTS = ['native', 'sans', 'serif', 'mono'];
@@ -31,11 +35,17 @@ function Select({ label, value, options, onChange }) {
 function Demo() {
   const field = useRef(null);
   const [language, setLanguage] = useState('English');
+  const [chosenRegion, setRegion] = useState('US');
   const [arrangement, setArrangement] = useState('qwerty');
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState('native');
   const [fontSize, setFontSize] = useState(20);
   const [shown, setShown] = useState(true);
+  const [numpad, setNumpad] = useState(false);
+
+  // A region from the other language falls back to that language's first one.
+  const regions = REGIONS.get(language);
+  const region = regions.includes(chosenRegion) ? chosenRegion : regions[0];
 
   const onKey = (key) => {
     const { value, selectionStart, selectionEnd } = field.current;
@@ -56,8 +66,13 @@ function Demo() {
           options={ARRANGEMENTS}
           onChange={setArrangement}
         />
+        <Select label="Region" value={region} options={regions} onChange={setRegion} />
         <Select label="Theme" value={theme} options={THEMES} onChange={setTheme} />
         <Select label="Font" value={font} options={FONTS} onChange={setFont} />
+        <label>
+          <input type="checkbox" checked={numpad} onChange={(e) => setNumpad(e.target.checked)} />{' '}
+          Number pad
+        </label>
         <label>
           Key size{' '}
           <input
@@ -78,12 +93,13 @@ function Demo() {
       />
       {shown ? (
         <Keyboard
-          layout={LAYOUTS.get(language)(arrangement)}
+          layout={LAYOUTS.get(language)(arrangement, region)}
           onKey={onKey}
           onClose={() => setShown(false)}
           theme={theme}
           font={font}
           fontSize={fontSize}
+          numpad={numpad}
         />
       ) : (
         <button type="button" onClick={() => setShown(true)}>

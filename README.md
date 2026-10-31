@@ -6,7 +6,8 @@ On-screen keyboards for React apps (React 18 and 19). Show a keyboard for a lang
 
 - A keyboard you pick by language, or build from your own layout
 - Light and dark themes, or your own colours, and a choice of font: the device's own, sans, serif or mono
-- English and Spanish keyboards, with letters in QWERTY or alphabetical order
+- English and Spanish keyboards laid out like real ones for each country, with letters in QWERTY or alphabetical order
+- Shift, Caps Lock and AltGr keys, keys that show both characters (1 and !), and an optional number pad
 - Works with any input: the keyboard reports key presses and you decide where the text goes
 - Keys that screen readers can read, and focus that stays in your text field
 - Right-to-left and complex scripts, with a dotted circle shown for signs that sit on a letter
