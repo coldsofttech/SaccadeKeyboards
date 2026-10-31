@@ -5,7 +5,8 @@ On-screen keyboards for React apps (React 18 and 19). Show a keyboard for a lang
 ## What you get
 
 - A keyboard you pick by language, or build from your own layout
-- Light and dark themes, or your own colours
+- Light and dark themes, or your own colours, and a choice of font: the device's own, sans, serif or mono
+- English out of the box, with letters in QWERTY or alphabetical order
 - Works with any input: the keyboard reports key presses and you decide where the text goes
 - Keys that screen readers can read, and focus that stays in your text field
 - Right-to-left and complex scripts, with a dotted circle shown for signs that sit on a letter
@@ -14,7 +15,7 @@ On-screen keyboards for React apps (React 18 and 19). Show a keyboard for a lang
 ## Install
 
 ```bash
-npm install @coldsofttech/saccade-keyboards
+npm install @coldsofttech/saccade-keyboards @coldsofttech/saccade-en
 ```
 
 React and `react-dom` 18 or 19 must be installed in your app.
@@ -22,13 +23,15 @@ React and `react-dom` 18 or 19 must be installed in your app.
 ## Use it
 
 ```jsx
-import { Keyboard } from '@coldsofttech/saccade-keyboards';
+import { Keyboard, registerLanguage } from '@coldsofttech/saccade-keyboards';
 import '@coldsofttech/saccade-keyboards/style.css';
 
-<Keyboard language="en" onKey={(key) => console.log(key)} theme="dark" />;
+registerLanguage('en', () => import('@coldsofttech/saccade-en'));
+
+<Keyboard language="en" onKey={(key) => console.log(key)} theme="dark" font="native" />;
 ```
 
-Each language is installed separately, for example `@coldsofttech/saccade-en`. If one is missing, the keyboard tells you which package to install. See the [package guide](packages/saccade-keyboards/README.md) for all options, typing into a field, and building your own keyboard.
+Each language is installed separately. If one is missing, the keyboard tells you which package to install. For English with the letters in alphabetical order, pass `layout={createLayout('alphabetical')}` from `@coldsofttech/saccade-en` instead of `language`. See the [package guide](packages/saccade-keyboards/README.md) for all options, typing into a field, and building your own keyboard.
 
 ## Contributing
 

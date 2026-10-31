@@ -23,6 +23,8 @@ import { useKeyboard } from './useKeyboard.js';
  * @property {() => void} [onClose] The hide key was pressed.
  * @property {'light' | 'dark' | ThemeColors} [theme] Colours of the keyboard ('light').
  * @property {string} [label] The name of the keyboard for a screen reader.
+ * @property {string} [font] The font of the keys: `native` (the device's own font), `sans`, `serif`,
+ *   `mono`, or any CSS font-family list, such as `"Atkinson Hyperlegible", sans-serif` ('native').
  * @property {number} [fontSize] The size of the letters on the keys, in pixels (16).
  */
 
@@ -33,6 +35,14 @@ const TOKENS = new Map([
   ['border', '--saccade-border'],
   ['accent', '--saccade-accent'],
   ['accentText', '--saccade-accent-text'],
+]);
+
+/** Fonts every device has, so nothing is bundled and no font licence is involved. */
+const FONTS = new Map([
+  ['native', 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'],
+  ['sans', 'ui-sans-serif, "Helvetica Neue", Arial, sans-serif'],
+  ['serif', 'ui-serif, Georgia, "Times New Roman", serif'],
+  ['mono', 'ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace'],
 ]);
 
 /** @param {KeyboardProps['theme']} theme */
@@ -47,6 +57,14 @@ function themeProps(theme) {
 }
 
 /**
+ * @param {{ className: string, style?: Record<string, string> }} props Theme props.
+ * @param {string} font The `font` prop.
+ */
+function withFont(props, font) {
+  return { ...props, style: { ...props.style, fontFamily: FONTS.get(font) ?? font } };
+}
+
+/**
  * An on-screen keyboard for a layout. It edits nothing: it says which key was pressed, and
  * whoever uses it types into its own field (see `applyKey`). Pressing a key keeps the focus where
  * it was.
@@ -54,7 +72,15 @@ function themeProps(theme) {
  * @param {KeyboardProps} props Component props.
  * @returns {import('react').JSX.Element} The keyboard.
  */
-export function Keyboard({ layout, onKey, onClose, theme = 'light', label, fontSize = 16 }) {
+export function Keyboard({
+  layout,
+  onKey,
+  onClose,
+  theme = 'light',
+  label,
+  font = 'native',
+  fontSize = 16,
+}) {
   const { rows, shift, press, describe } = useKeyboard({ layout, onKey, onClose });
 
   return (
@@ -64,7 +90,7 @@ export function Keyboard({ layout, onKey, onClose, theme = 'light', label, fontS
       aria-label={label ?? `${layout.name} on-screen keyboard`}
       lang={layout.id}
       dir="ltr"
-      {...themeProps(theme)}
+      {...withFont(themeProps(theme), font)}
     >
       {rows.map((row, r) => (
         <div key={r} className={styles.row}>

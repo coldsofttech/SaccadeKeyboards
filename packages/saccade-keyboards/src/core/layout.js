@@ -51,9 +51,10 @@ const ACTIONS = ['shift', 'backspace', 'enter', 'space', 'close'];
  */
 export function keys(normal, shifted = '') {
   const upper = [...shifted];
-  return [...normal].map((value, i) =>
-    upper[i] ? { type: 'text', value, shift: upper[i] } : { type: 'text', value },
-  );
+  return [...normal].map((value, i) => {
+    const capital = upper.at(i);
+    return capital ? { type: 'text', value, shift: capital } : { type: 'text', value };
+  });
 }
 
 /**
@@ -193,8 +194,7 @@ export function validateLayout(layout) {
     return problems;
   }
   const layerNames = Object.keys(layers);
-  layerNames.forEach((layer) => {
-    const rows = layers[layer];
+  Object.entries(layers).forEach(([layer, rows]) => {
     if (!Array.isArray(rows) || rows.length === 0) {
       problems.push(`layer "${layer}": must be a non-empty list of rows`);
       return;

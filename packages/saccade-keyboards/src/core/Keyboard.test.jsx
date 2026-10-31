@@ -64,7 +64,21 @@ describe('Keyboard', () => {
   it('takes colours from a theme object', () => {
     render(<Keyboard layout={layout} onKey={vi.fn()} theme={{ accent: 'red', nope: 'blue' }} />);
     expect(screen.getByRole('group').style.getPropertyValue('--saccade-accent')).toBe('red');
-    expect(screen.getByRole('group').style.length).toBe(1);
+    expect(screen.getByRole('group').style.getPropertyValue('--saccade-key')).toBe('');
+  });
+
+  it('uses the device font unless told otherwise', () => {
+    render(<Keyboard layout={layout} onKey={vi.fn()} />);
+    expect(screen.getByRole('group').style.fontFamily).toContain('system-ui');
+  });
+
+  it.each([
+    ['mono', 'monospace'],
+    ['serif', 'serif'],
+    ['"Atkinson Hyperlegible", sans-serif', 'Atkinson Hyperlegible'],
+  ])('takes the %s font', (font, expected) => {
+    render(<Keyboard layout={layout} onKey={vi.fn()} font={font} />);
+    expect(screen.getByRole('group').style.fontFamily).toContain(expected);
   });
 
   it.each(['light', 'dark'])('has no accessibility violations in the %s theme', async (theme) => {

@@ -11,3 +11,5 @@ export {
   symbolsLayer,
   validateLayout,
 } from './layout.js';
+
+/** @typedef {import('./layout.js').Layout} Layout */

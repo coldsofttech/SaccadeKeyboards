@@ -60,9 +60,10 @@ export function useKeyboard({ layout, onKey, onClose }) {
   const [chosen, setChosen] = useState('');
   const [shift, setShift] = useState(/** @type {'off' | 'once' | 'caps'} */ ('off'));
   // Fall back to the first layer when the layout changes to one without the chosen layer.
-  const layer = layout.layers[chosen] ? chosen : Object.keys(layout.layers)[0];
-  /** @type {Record<string, string>} */
-  const names = { ...PUNCTUATION_NAMES, ...layout.names };
+  const layers = new Map(Object.entries(layout.layers));
+  const layer = layers.has(chosen) ? chosen : [...layers.keys()][0];
+  /** @type {Map<string, string>} */
+  const names = new Map(Object.entries({ ...PUNCTUATION_NAMES, ...layout.names }));
 
   /** @param {Key} key */
   const press = (key) => {
@@ -94,7 +95,7 @@ export function useKeyboard({ layout, onKey, onClose }) {
   const describe = (key) => {
     if (key.type === 'text') {
       const value = typedValue(key, shift !== 'off');
-      return { label: shown(value), name: names[value] ?? value };
+      return { label: shown(value), name: names.get(value) ?? value };
     }
     if (key.type === 'layer') return { label: key.label, name: key.name ?? key.label };
     if (key.type === 'shift') {
@@ -107,5 +108,5 @@ export function useKeyboard({ layout, onKey, onClose }) {
     return FIXED[key.type];
   };
 
-  return { layer, shift, rows: layout.layers[layer], press, describe };
+  return { layer, shift, rows: /** @type {Key[][]} */ (layers.get(layer)), press, describe };
 }

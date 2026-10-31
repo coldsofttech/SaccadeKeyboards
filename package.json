@@ -6,10 +6,12 @@
     "node": ">=22"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @coldsofttech/saccade-keyboards && npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace examples/demo",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

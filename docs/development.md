@@ -3,20 +3,21 @@
 ## Setup
 
 - Node 22 or newer. `.nvmrc` pins 24, the version used for linting, building and releasing.
-- `npm ci` installs every workspace (`packages/*`).
+- `npm ci` installs every workspace (`packages/*` and `examples/*`).
 - `pip install pre-commit && pre-commit install --hook-type pre-commit --hook-type post-commit`.
 
 ## Scripts
 
 All scripts run from the repository root.
 
-| Script                            | Purpose                                                          |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `npm run build`                   | Build every package (Vite library mode, then `.d.ts` from JSDoc) |
-| `npm run lint`                    | ESLint across the repository                                     |
-| `npm run format` / `format:check` | Prettier write / check, including Markdown                       |
-| `npm test` / `test:coverage`      | Vitest; coverage thresholds live in `vitest.config.js`           |
-| `npm run check:packages`          | `publint` and `@arethetypeswrong/cli` on each built package      |
+| Script                            | Purpose                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run build`                   | Build every package (Vite library mode, then `.d.ts` from JSDoc); the engine builds first |
+| `npm run dev`                     | Start the demo in `examples/demo` (build packages first)                                  |
+| `npm run lint`                    | ESLint across the repository                                                              |
+| `npm run format` / `format:check` | Prettier write / check, including Markdown                                                |
+| `npm test` / `test:coverage`      | Vitest; coverage thresholds live in `vitest.config.js`                                    |
+| `npm run check:packages`          | `publint` and `@arethetypeswrong/cli` on each built package                               |
 
 ## Conventions
 
