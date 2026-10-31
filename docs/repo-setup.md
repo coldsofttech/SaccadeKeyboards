@@ -28,9 +28,9 @@ Repository admins can bypass the ruleset through a pull request. This lets a sol
 
 ## Manual steps
 
-- Allow squash merging only and delete head branches after merge (Settings > General). Create the `skip-changelog` label used by `.github/release.yml`.
+- Allow squash merging only and delete head branches after merge (Settings > General). Create the `skip-changelog` label used by `.github/release.yml`, and the `language`, `region` and `layout` labels used by the issue forms (a label that does not exist is not applied).
 - If the owner is an organization, change `.github/CODEOWNERS` to a team.
-- Fill in the contact method in `CODE_OF_CONDUCT.md`.
 - Run `pre-commit install --hook-type pre-commit --hook-type post-commit` locally (the post-commit type is needed for Sweepito cleanup).
 - Publish to npm with trusted publishing (no token): create a GitHub environment named `npm` (Settings > Environments), then on npmjs.com open each package's Settings > Trusted publisher and register this repository, the workflow `release.yml` and the `npm` environment. A package must exist on npm before it can be configured, so publish the first version manually with `npm publish --access public`, then register the trusted publisher.
+- There are 7 packages to publish: `saccade-keyboards` and the languages `en`, `es`, `fr`, `hi`, `te` and `ur`. Each needs its own trusted publisher on npm. A new language package needs the same.
 - CodeQL default setup only works once the repo contains a supported language, so enable it after adding code.

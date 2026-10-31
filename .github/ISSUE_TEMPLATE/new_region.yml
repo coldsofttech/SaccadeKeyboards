@@ -1,0 +1,50 @@
+name: Region-specific layout
+description: Ask for a regional variant of a keyboard that already exists
+title: 'Region: '
+labels: [enhancement, region]
+body:
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - English
+        - Spanish
+        - French
+        - Hindi
+        - Telugu
+        - Urdu
+        - Another language
+    validations:
+      required: true
+  - type: input
+    id: region
+    attributes:
+      label: Region
+      description: The country or area, for example Ireland for English or Germany for French.
+    validations:
+      required: true
+  - type: textarea
+    id: difference
+    attributes:
+      label: How does the keyboard differ?
+      description: Which keys sit in other places or type other characters compared with the closest layout we have, for example AZERTY instead of QWERTY, or a different @ or currency key.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference
+      description: A link to the official layout or a picture of a real keyboard from that region.
+    validations:
+      required: true
+  - type: dropdown
+    id: help
+    attributes:
+      label: Can you help review it?
+      options:
+        - Yes, I can check the layout
+        - Yes, and I can write the layout
+        - No, I only need it
+    validations:
+      required: true

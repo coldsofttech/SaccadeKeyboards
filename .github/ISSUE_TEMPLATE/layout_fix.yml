@@ -1,0 +1,37 @@
+name: Layout fix
+description: A key is wrong, missing or in the wrong place on an existing keyboard
+title: 'Layout fix: '
+labels: [bug, layout]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Language
+      options:
+        - English (saccade-en)
+        - Spanish (saccade-es)
+        - French (saccade-fr)
+        - Hindi (saccade-hi)
+        - Telugu (saccade-te)
+        - Urdu (saccade-ur)
+    validations:
+      required: true
+  - type: input
+    id: variant
+    attributes:
+      label: Arrangement and region
+      description: For example "French, FR, native" or "Hindi, InScript, devanagari digits".
+    validations:
+      required: true
+  - type: textarea
+    id: key
+    attributes:
+      label: Which key is wrong?
+      description: Say which key, which layer it is on (normal, Shift, AltGr or symbols), what it types now and what it should type.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference
+      description: A link to the official layout, or a photo of a real keyboard, that shows the correct key.

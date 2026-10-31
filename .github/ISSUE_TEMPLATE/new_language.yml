@@ -1,0 +1,56 @@
+name: New language
+description: Ask for a keyboard for a language that is not here yet
+title: 'New language: '
+labels: [enhancement, language]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keyboards are available for English, Spanish, French, Hindi, Telugu and Urdu. Each language is its own package, so a new one does not make the others bigger.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: The name and the language code, for example Tamil (ta).
+    validations:
+      required: true
+  - type: input
+    id: script
+    attributes:
+      label: Script
+      description: For example Latin, Devanagari, Arabic or Cyrillic. Say if it is written right to left.
+    validations:
+      required: true
+  - type: textarea
+    id: standard
+    attributes:
+      label: Keyboard layout to follow
+      description: The layout people already use, such as a national standard, InScript, or the one on their phone or computer. A link to its reference chart helps most.
+    validations:
+      required: true
+  - type: textarea
+    id: arrangements
+    attributes:
+      label: Other arrangements
+      description: For example a phonetic layout that maps Latin keys to the letters of the language, or an alphabetical order.
+  - type: textarea
+    id: regions
+    attributes:
+      label: Regions or digits
+      description: Countries whose keyboards differ, or digit styles (such as Latin and native digits) that people need.
+  - type: textarea
+    id: special
+    attributes:
+      label: Special characters
+      description: Letters, signs that sit on a letter, ligatures or punctuation that are easy to get wrong.
+  - type: dropdown
+    id: help
+    attributes:
+      label: Can you help review it?
+      description: A native speaker checking the keys is the best way to get a layout right.
+      options:
+        - Yes, I can check the layout
+        - Yes, and I can write the layout
+        - No, I only need it
+    validations:
+      required: true

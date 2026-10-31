@@ -30,6 +30,10 @@ All scripts run from the repository root.
 - Packages never import from an application.
 - Prettier owns formatting for all files. markdownlint is not used.
 
+## Adding a language
+
+See [adding-a-language.md](adding-a-language.md) for a new language, a new arrangement or a new region.
+
 ## Keeping up with the JS template
 
 This repo is created from `js-SaccadeKeyboards` and receives no automatic updates. When a fix lands there:
@@ -40,7 +44,7 @@ This repo is created from `js-SaccadeKeyboards` and receives no automatic update
 
 ## CI
 
-`ci.yml` runs `lint`, `test` (Node 22, 24, 26 on Ubuntu; Node 24 on Windows and macOS, all with React 19; plus Node 24 with React 18) and `build`. `build` also checks tarball contents and reports gzipped bundle size against `.size-limit.json`. The final `ci` job is the single required check for the `main` ruleset. `audit.yml` runs `npm audit` weekly and when `package-lock.json` changes.
+`ci.yml` runs `lint`, `test` (Node 22, 24, 26 on Ubuntu; Node 24 on Windows and macOS, all with React 19; plus Node 24 with React 18) and `build`. `build` also checks tarball contents, builds the demo against the built packages and reports gzipped bundle size against `.size-limit.json`. A new language package needs an entry in `.size-limit.json`. The final `ci` job is the single required check for the `main` ruleset. `audit.yml` runs `npm audit` weekly and when `package-lock.json` changes.
 
 ## Release
 

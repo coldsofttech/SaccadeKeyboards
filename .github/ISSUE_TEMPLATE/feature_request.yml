@@ -2,6 +2,22 @@ name: Feature request
 description: Suggest an idea or improvement
 labels: [enhancement]
 body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package is this about?
+      options:
+        - saccade-keyboards (the component and its options)
+        - saccade-en
+        - saccade-es
+        - saccade-fr
+        - saccade-hi
+        - saccade-te
+        - saccade-ur
+        - Not sure
+    validations:
+      required: true
   - type: textarea
     id: problem
     attributes:
