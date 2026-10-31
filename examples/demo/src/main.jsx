@@ -7,6 +7,7 @@ import { createLayout as createEnglish } from '@coldsofttech/saccade-en';
 import { createLayout as createSpanish } from '@coldsofttech/saccade-es';
 import { createLayout as createFrench } from '@coldsofttech/saccade-fr';
 import { createLayout as createHindi } from '@coldsofttech/saccade-hi';
+import { createLayout as createTelugu } from '@coldsofttech/saccade-te';
 
 const LAYOUTS = new Map([
   ['English', createEnglish],
@@ -14,6 +15,7 @@ const LAYOUTS = new Map([
   ['French', createFrench],
   // Hindi has no regions: the keyboard is InScript or phonetic and the region picks the digits.
   ['Hindi', createHindi],
+  ['Telugu', createTelugu],
 ]);
 const LANGUAGES = [...LAYOUTS.keys()];
 const REGIONS = new Map([
@@ -21,6 +23,7 @@ const REGIONS = new Map([
   ['Spanish', ['ES', 'MX', 'AR', 'CO', 'US', 'LATAM']],
   ['French', ['FR', 'BE', 'CA', 'CH']],
   ['Hindi', ['latin', 'devanagari']],
+  ['Telugu', ['latin', 'telugu']],
 ]);
 // `native` is the order of the keyboard of the region: QWERTY, AZERTY and so on.
 const ARRANGEMENTS = ['native', 'alphabetical'];
@@ -54,7 +57,7 @@ function Demo() {
   const [currencypad, setCurrencypad] = useState(false);
 
   // A region from the other language falls back to that language's first one.
-  const arrangements = language === 'Hindi' ? HINDI_ARRANGEMENTS : ARRANGEMENTS;
+  const arrangements = ['Hindi', 'Telugu'].includes(language) ? HINDI_ARRANGEMENTS : ARRANGEMENTS;
   const letters = arrangements.includes(arrangement) ? arrangement : arrangements[0];
   const regions = REGIONS.get(language);
   const region = regions.includes(chosenRegion) ? chosenRegion : regions[0];
