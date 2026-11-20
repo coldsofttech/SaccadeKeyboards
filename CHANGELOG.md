@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- `createKeyboardModel` in `@coldsofttech/saccade-keyboards/core`: the state and rules of the keyboard (shift, caps lock, AltGr, layers, Num Lock, the currency row) without markup or any framework. `useKeyboard` is now a thin hook over it.
+- `registerLanguage`, `languages` and `loadLayout` are also exported from `@coldsofttech/saccade-keyboards/core`.
+
+### Changed
+
+- **Breaking:** `@coldsofttech/saccade-keyboards/core` no longer uses React. `Keyboard` (for a layout object) and `useKeyboard` moved from it to the main entry, `@coldsofttech/saccade-keyboards`, whose `Keyboard` already takes a `layout` prop. Change the import path; nothing else changes. The language packages are not affected.
+- React and `react-dom` are now optional peer dependencies of `@coldsofttech/saccade-keyboards`, so an app with no React can use `/core`.
+- `npm run check:packages` fails if `/core`, or a language package, can reach React.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

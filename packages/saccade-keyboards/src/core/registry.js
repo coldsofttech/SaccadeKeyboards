@@ -1,6 +1,6 @@
-import { validateLayout } from './core/layout.js';
+import { validateLayout } from './layout.js';
 
-/** @typedef {import('./core/layout.js').Layout} Layout */
+/** @typedef {import('./layout.js').Layout} Layout */
 
 /**
  * Loads a layout: a function that imports it, such as `() => import('@coldsofttech/saccade-en')`.

@@ -83,13 +83,15 @@ Repository admins can bypass through a pull request so a solo maintainer is not 
 
 ## Keyboard package
 
-`packages/saccade-keyboards` has two entry points:
+`packages/saccade-keyboards` has these entry points:
 
-| Entry                                       | What it is                                                                                                      |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `@coldsofttech/saccade-keyboards`           | `Keyboard` picked by `language`, with a registry that loads each layout when first needed.                      |
-| `@coldsofttech/saccade-keyboards/core`      | The engine: `Keyboard` for a layout object, `useKeyboard`, `applyKey`, `validateLayout` and the layout helpers. |
-| `@coldsofttech/saccade-keyboards/style.css` | The styles, imported once by the app.                                                                           |
+| Entry                                       | What it is                                                                                                                                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@coldsofttech/saccade-keyboards`           | `Keyboard` picked by `language` or given a `layout`, `useKeyboard`, and the registry that loads each layout when first needed. Uses React. |
+| `@coldsofttech/saccade-keyboards/core`      | The engine, **with no React**: `createKeyboardModel`, `typedValue`, `applyKey`, `validateLayout`, the registry and the layout helpers.     |
+| `@coldsofttech/saccade-keyboards/style.css` | The styles, imported once by the app.                                                                                                      |
+
+`core` is React-free on purpose: the language packages depend on it, and an app with no React must be able to install a language. `npm run check:packages` follows every import from `core` (and from each language package) and fails if one reaches React, and ESLint forbids React and the global `document` in that code. See [design](design/vanilla-and-element.md) for the plan to add plain JavaScript and Web Component entry points.
 
 Each language is its own package, `@coldsofttech/saccade-<lang>` (for example `saccade-en`), holding its layouts and depending on `saccade-keyboards/core` as a peer. The layout format is described in [layout format](layout-format.md), and the steps to add a language are in [adding a language](adding-a-language.md).
 

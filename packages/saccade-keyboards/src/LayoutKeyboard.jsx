@@ -1,10 +1,11 @@
 import styles from './Keyboard.module.css';
-import { placeKeys } from './grid.js';
-import { keys, numpadRows } from './layout.js';
-import { CURRENCY_SIGNS, useKeyboard } from './useKeyboard.js';
+import { placeKeys } from './core/grid.js';
+import { keys, numpadRows } from './core/layout.js';
+import { CURRENCY_SIGNS } from './core/typed.js';
+import { useKeyboard } from './useKeyboard.js';
 
-/** @typedef {import('./layout.js').Layout} Layout */
-/** @typedef {import('./applyKey.js').KeyPress} KeyPress */
+/** @typedef {import('./core/layout.js').Layout} Layout */
+/** @typedef {import('./core/applyKey.js').KeyPress} KeyPress */
 
 /**
  * Colours for a custom theme. Anything left out keeps the light theme's colour.
@@ -69,8 +70,8 @@ function themeProps(theme) {
  * Whether a key has a second character of its own, like the ! above the 1, rather than just the
  * capital of a letter.
  *
- * @param {import('./layout.js').Key} key
- * @returns {key is import('./layout.js').TextKey}
+ * @param {import('./core/layout.js').Key} key
+ * @returns {key is import('./core/layout.js').TextKey}
  */
 const hasSecondCharacter = (key) =>
   key.type === 'text' && key.shift !== undefined && key.shift !== key.value.toUpperCase();
@@ -87,8 +88,8 @@ function withFont(props, font) {
  * The rows with a currency key before each space key, which gives up the same width so the row
  * keeps its length.
  *
- * @param {import('./layout.js').Key[][]} rows
- * @returns {import('./layout.js').Key[][]}
+ * @param {import('./core/layout.js').Key[][]} rows
+ * @returns {import('./core/layout.js').Key[][]}
  */
 const withCurrencyKey = (rows) =>
   rows.map((row) =>
@@ -110,7 +111,7 @@ const withCurrencyKey = (rows) =>
  * @param {KeyboardProps} props Component props.
  * @returns {import('react').JSX.Element} The keyboard.
  */
-export function Keyboard({
+export function LayoutKeyboard({
   layout,
   onKey,
   onClose,
@@ -127,7 +128,7 @@ export function Keyboard({
     onClose,
   });
 
-  /** @param {import('./grid.js').PlacedKey[][]} placed */
+  /** @param {import('./core/grid.js').PlacedKey[][]} placed */
   const keysOf = (placed) =>
     placed.flat().map(({ key, column, columnSpan, row, rowSpan }, k) => {
       const { label: text, caption, name, pressed, disabled } = describe(key);

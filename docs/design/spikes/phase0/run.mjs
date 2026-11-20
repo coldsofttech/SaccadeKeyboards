@@ -20,27 +20,24 @@ const results = [];
 const record = (name, ok, detail = '', note = false) =>
   results.push({ name, ok: Boolean(ok), detail, note });
 
-// --- Static: what in the engine is React-free, and what the language packages need ----------------
+// --- Static: the engine is React-free, and what the language packages need from it ----------------
 const keyboards = join(root, 'packages/saccade-keyboards/src');
 const read = (path) => readFileSync(path, 'utf8');
 const exportsOf = (source) =>
   [...source.matchAll(/export (?:const|function|async function) (\w+)/g)].map((m) => m[1]);
 const importsReact = (source) => /from ['"]react(-dom)?['"/]/.test(source);
-const pureFiles = ['layout.js', 'grid.js', 'applyKey.js'];
-const pureNames = new Set(
-  pureFiles.flatMap((file) => exportsOf(read(join(keyboards, 'core', file)))),
+// Since Phase 1 `core` holds only React-free files, and the hook lives next to the React component.
+const coreDir = join(keyboards, 'core');
+const coreFiles = readdirSync(coreDir).filter((f) => f.endsWith('.js') && !f.endsWith('.test.js'));
+const pureNames = new Set(coreFiles.flatMap((file) => exportsOf(read(join(coreDir, file)))));
+record(
+  'static: no file in core imports React',
+  coreFiles.every((f) => !importsReact(read(join(coreDir, f)))),
+  `${coreFiles.length} files: ${coreFiles.join(', ')}`,
 );
 record(
-  'static: layout.js, grid.js, applyKey.js and registry.js import no React',
-  [...pureFiles.map((f) => join(keyboards, 'core', f)), join(keyboards, 'registry.js')].every(
-    (f) => !importsReact(read(f)),
-  ),
-);
-const hookSource = read(join(keyboards, 'core/useKeyboard.js'));
-record(
-  'static: useKeyboard.js is the one engine module that imports React, and it also holds typedValue',
-  importsReact(hookSource) && /export function typedValue/.test(hookSource),
-  'typedValue and CURRENCY_SIGNS are pure but live next to the hook: they move to the React-free core',
+  'static: the hook (useKeyboard.js) is outside core and is the engine module that imports React',
+  importsReact(read(join(keyboards, 'useKeyboard.js'))),
 );
 const wanted = new Set();
 for (const pkg of readdirSync(join(root, 'packages')).filter((n) =>
@@ -56,9 +53,9 @@ for (const pkg of readdirSync(join(root, 'packages')).filter((n) =>
 }
 const missing = [...wanted].filter((name) => !pureNames.has(name));
 record(
-  'static: every name the six language packages take from /core is already in a React-free file',
+  'static: every name the six language packages take from /core is in a React-free core file',
   missing.length === 0,
-  `they use: ${[...wanted].sort().join(', ')}${missing.length ? `; NOT pure: ${missing.join(', ')}` : ''}`,
+  `they use: ${[...wanted].sort().join(', ')}${missing.length ? `; NOT in core: ${missing.join(', ')}` : ''}`,
 );
 
 // --- Build: the CSS as a JS string, from the real package ---------------------------------------

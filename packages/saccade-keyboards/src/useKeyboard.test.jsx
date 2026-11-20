@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useKeyboard } from './useKeyboard.js';
-import { bottomRow, capsKey, cased, shiftKey } from './layout.js';
+import { bottomRow, capsKey, cased, shiftKey } from './core/layout.js';
 
 const layout = {
   id: 'xx',

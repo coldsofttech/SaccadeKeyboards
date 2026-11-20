@@ -1,2 +1,3 @@
 export { Keyboard } from './Keyboard.jsx';
-export { languages, loadLayout, registerLanguage } from './registry.js';
+export { useKeyboard } from './useKeyboard.js';
+export { languages, loadLayout, registerLanguage } from './core/registry.js';

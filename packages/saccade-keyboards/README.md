@@ -136,16 +136,32 @@ registerLanguage('fr', () => import('@coldsofttech/saccade-fr'));
 
 ## Build your own
 
-`@coldsofttech/saccade-keyboards/core` has what you need without the language loader:
+`@coldsofttech/saccade-keyboards/core` has what you need to write a layout or to draw the keys yourself. It uses no React, so a language package, or an app with no React, can import it:
 
-- `Keyboard`: the same keyboard for a `layout` object.
-- `useKeyboard`: the state and behaviour without markup, to draw the keys yourself.
+- `createKeyboardModel`: the state and rules of the keyboard (shift, caps lock, AltGr, layers, Num Lock, the currency row) without any markup or framework. `getState()`, `press(key)`, `describe(key)`, `setLayout(layout)`, `setCallbacks({ onKey, onClose })` and `subscribe(listener)`.
+- `typedValue`, `CURRENCY_SIGNS`: what a key types for the state of shift and AltGr, and the currency signs.
 - `applyKey`: applies a key press to text and a selection.
 - `validateLayout`: lists what is wrong with a layout.
 - `Layout`: the type of a layout, for packages that provide one.
 - `keys`, `cased`, `physicalRows`, `numpadRows`, `bottomRow`, `symbolsLayer`, `shiftKey`, `capsKey`, `altGrKey`, `backspaceKey`, `PUNCTUATION_NAMES`: helpers to write layouts.
+- `registerLanguage(id, loader)`, `languages()` and `loadLayout(id)`: add a language by its code.
 
-`registerLanguage(id, loader)`, `languages()` and `loadLayout(id)` from the main entry let you add a language by its code.
+From the main entry (which uses React) you also get:
+
+- `Keyboard` with a `layout` prop, to show the keyboard for a layout object without a language.
+- `useKeyboard`: the model as a React hook, to draw the keys yourself.
+- `registerLanguage`, `languages` and `loadLayout`, as above.
+
+### Moving from 0.1
+
+In 0.1 `@coldsofttech/saccade-keyboards/core` also exported `Keyboard` (for a layout object) and `useKeyboard`. Those need React, so they moved to the main entry:
+
+```diff
+-import { Keyboard, useKeyboard } from '@coldsofttech/saccade-keyboards/core';
++import { Keyboard, useKeyboard } from '@coldsofttech/saccade-keyboards';
+```
+
+`Keyboard` there takes `layout={…}` as well as `language`, so nothing else changes.
 
 ## License
 

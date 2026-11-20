@@ -1,8 +1,9 @@
 # Design: vanilla JS and Web Component entry points
 
-Status: **Phase 0, for approval.** Nothing here changes a published API yet. The spikes in
-[spikes/phase0](spikes/phase0/run.mjs) back the decisions below; their results are in
-[Spike results](#spike-results).
+Status: **Phase 0 approved; Phase 1 built** (see [Phase 1](#phase-1-the-react-free-core)). `/core`
+is React-free, the model exists and `useKeyboard` runs on it; the new entry points (`/vanilla`,
+`/element`, `/css`) come in Phase 2. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
+decisions below; their results are in [Spike results](#spike-results).
 
 This follows the plan used for Fovea Viewers (React first, then plain JavaScript and Web Components
 from the same code). Saccade Keyboards is much smaller, so each phase is lighter, but the goal and
@@ -309,3 +310,53 @@ text. Decide in Phase 5 with a screen reader if one is available.
 Each phase ends with something shippable and a gate for you to approve. The React component keeps
 working until the phase that switches it to the controller (Phase 2), and the React tests are the
 safety net.
+
+## Phase 1: the React-free core
+
+**What was built**
+
+| Where                                  | What                                                                                                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/model.js`                        | `createKeyboardModel`: the state and rules from `useKeyboard`, with no React. `getState`, `subscribe`, `press`, `describe`, `setLayout`, `setCallbacks` |
+| `core/typed.js`                        | `typedValue` and `CURRENCY_SIGNS`, moved out of the hook's file                                                                                         |
+| `core/registry.js`                     | the language registry (`registerLanguage`, `languages`, `loadLayout`), moved into `core`; the root re-exports it                                        |
+| `useKeyboard.js`, `LayoutKeyboard.jsx` | moved out of `core`: the hook is now `useSyncExternalStore` over the model, and the layout-only component is the root `Keyboard`'s inner part           |
+| `vanilla/shell.js`, `vanilla/h.js`     | copied from Fovea Viewers: idempotent destroy, cancellable loads, callbacks read when called; a safe element builder                                    |
+| `element/define.js`                    | copied and trimmed: attributes, properties, events, an open shadow root with the CSS adopted (or a `<style>`), buffering until `ready`                  |
+| `useController.js`                     | copied: the React side of a wrapper, with its StrictMode and removed-prop rules                                                                         |
+| `scripts/`                             | `vite-plugin-css-module.js` (and its test) and `check-vanilla-no-react.js` (and its test)                                                               |
+| `test-support/`                        | the conformance suite, the vanilla, element and React adapters, and a stub keyboard built from the shared runtime                                       |
+
+The old tests were the spec. All 56 tests that existed before (`useKeyboard`, the layout-only
+`Keyboard`, the language `Keyboard`, `applyKey`, `grid`, `layout`) pass against the model-based hook
+and the moved components, with only their import paths changed. There are 237 tests now: the model
+(13), the copied plumbing, the scripts, and 12 conformance behaviours for each of three adapters
+(vanilla, element, React). Breaking the AltGr rule in the model on purpose makes six of them fail.
+
+**The `/core` break** is as designed: `Keyboard` and `useKeyboard` left `/core`; the root has both.
+The README has a "Moving from 0.1" note and the changelog lists it as breaking. React is an optional
+peer dependency now.
+
+**The React-free guarantee is enforced three ways.** `check-vanilla-no-react` follows every import from
+`./core` (and, with `--entries .`, from each of the six language packages) through the built files;
+ESLint forbids React imports, the React-only modules and the global `document` in `core`, `vanilla`,
+`element` and the language packages; and `core` has no React peer. A probe file with all three
+violations fails lint.
+
+**Findings and choices**
+
+1. **A new layout is applied while rendering.** `useKeyboard` must show the new layout's keys in the
+   same render. `setLayout(layout, { silent: true })` changes the model without telling listeners and is
+   idempotent, so it is safe twice in StrictMode; a normal `setLayout` tells subscribers.
+2. **Callbacks do not trigger renders.** `setCallbacks` only stores them, so replacing `onKey` neither
+   renders nor resets the shift state. The conformance suite checks this on all three adapters.
+3. **jsdom 31 has constructable stylesheets.** Fovea Viewers' jsdom 30 did not, so the element helper's
+   tests here stub `CSSStyleSheet` away to test the `<style>` fallback, and test sharing on the real one.
+4. **The plumbing is unused until Phase 2.** The shell, `h`, the element helper, `useController` and the
+   CSS plugin are only reached from tests, so they are not in `dist` yet. They are tested now so Phase 2
+   can build on them.
+5. **Size.** The root entry grew from just under 4 kB to 4.03 kB (the model is a little larger than the
+   hook it replaces); its limit is 4.5 kB. `core` is 3.1 kB.
+
+Next: Phase 2, the keyboard on all three entry points: `createKeyboard` for a layout object, the
+`<saccade-keyboard>` element, and the React component as a wrapper over the controller.

@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { axe } from 'vitest-axe';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Keyboard } from './index.js';
-import { bottomRow, cased, keys, shiftKey } from './layout.js';
+import { LayoutKeyboard as Keyboard } from './LayoutKeyboard.jsx';
+import { bottomRow, cased, keys, shiftKey } from './core/layout.js';
 
 const layout = {
   id: 'en',

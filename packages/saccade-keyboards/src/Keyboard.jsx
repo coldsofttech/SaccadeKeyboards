@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Keyboard as CoreKeyboard } from './core/Keyboard.jsx';
-import { loadLayout } from './registry.js';
+import { LayoutKeyboard } from './LayoutKeyboard.jsx';
+import { loadLayout } from './core/registry.js';
 
 /** @typedef {import('./core/layout.js').Layout} Layout */
 
 /**
- * @typedef {Omit<import('./core/Keyboard.jsx').KeyboardProps, 'layout'> & {
+ * @typedef {Omit<import('./LayoutKeyboard.jsx').KeyboardProps, 'layout'> & {
  *   language?: string,
  *   layout?: import('./core/layout.js').Layout,
  *   fallback?: import('react').ReactNode,
@@ -43,7 +43,7 @@ export function Keyboard({ language, layout, fallback = null, ...props }) {
 
   const loaded = result.language === language ? result : null;
   const shown = layout ?? loaded?.layout;
-  if (shown) return <CoreKeyboard layout={shown} {...props} />;
+  if (shown) return <LayoutKeyboard layout={shown} {...props} />;
   if (loaded?.error) return <p role="alert">{loaded.error.message}</p>;
   return fallback;
 }
