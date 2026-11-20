@@ -2,6 +2,7 @@
 
 Technical documentation for this project lives in this folder. The top-level [README](../README.md) is for users.
 
+- [Design: vanilla JS and Web Component entry points](design/vanilla-and-element.md): the plan, the contract and the Phase 0 spike results for using the keyboards without React.
 - [Architecture](architecture.md): how the keyboard package, checks, workflows and releases fit together.
 - [Layout format](layout-format.md): the data that describes a keyboard, and how to check one.
 - [Adding a language](adding-a-language.md): the steps to add a language, an arrangement or a region.

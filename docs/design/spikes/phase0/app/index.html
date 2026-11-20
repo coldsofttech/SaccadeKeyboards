@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phase 0 spikes</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+      }
+      /* Page-level CSS that must not leak into the shadow roots. */
+      button {
+        color: rgb(255, 0, 0);
+      }
+    </style>
+  </head>
+  <body>
+    <input id="field" value="hello" />
+    <div id="fieldHost"></div>
+    <div id="kbA"></div>
+    <div id="kbB"></div>
+    <div dir="rtl" lang="ur"><div id="kbC"></div></div>
+    <div id="widthBox" style="width: 900px"><div id="kbD"></div></div>
+    <div id="kbE"></div>
+    <div id="kbF"></div>
+    <div id="probes"></div>
+    <script type="module" src="./main.jsx"></script>
+  </body>
+</html>
