@@ -1,8 +1,8 @@
 # Design: vanilla JS and Web Component entry points
 
-Status: **Phase 0 approved; Phase 1 built** (see [Phase 1](#phase-1-the-react-free-core)). `/core`
-is React-free, the model exists and `useKeyboard` runs on it; the new entry points (`/vanilla`,
-`/element`, `/css`) come in Phase 2. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
+Status: **Phase 0 approved; Phases 1 and 2 built** (see [Phase 2](#phase-2-the-keyboard-on-all-three-entry-points)). `/core`
+is React-free, the model exists and `useKeyboard` runs on it; `/vanilla`, `/element` and `/css` now
+draw a keyboard for a layout object. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
 decisions below; their results are in [Spike results](#spike-results).
 
 This follows the plan used for Fovea Viewers (React first, then plain JavaScript and Web Components
@@ -360,3 +360,44 @@ violations fails lint.
 
 Next: Phase 2, the keyboard on all three entry points: `createKeyboard` for a layout object, the
 `<saccade-keyboard>` element, and the React component as a wrapper over the controller.
+
+## Phase 2: the keyboard on all three entry points
+
+Status: **built**. A keyboard for a layout object works as a function, a Web Component and the React
+component, and the React component is now a thin wrapper over the function.
+
+- **`createKeyboard(container, props)`** (`/vanilla`) follows the controller contract: it returns
+  `{ element, update, destroy }`. It draws the keys with the same classes as before, keeps the button
+  elements across state changes (only labels, `aria-pressed`, `disabled` and classes change) and rebuilds
+  them only when the structure changes (rows, number pad, currency row, decimal). When it rebuilds it
+  puts the focus back on the key in the same place, also inside a shadow root.
+- **`<saccade-keyboard>`** (`/element`) is made by the copied element helper: Shadow DOM, the CSS adopted
+  from `/css`, the attributes `theme`, `label`, `font`, `font-size`, `numpad` and `currencypad`, the
+  property `layout`, and the events `saccade-key` and `saccade-close`. It stays empty until `layout` is
+  set. Importing the module registers the tag; `defineKeyboardElement()` registers it again safely.
+- **React** (`LayoutKeyboard`) is `useController(createKeyboard, props)` and a `<div>`. All 140 earlier
+  React tests pass without a change.
+- **CSS** is delivered by the build plugin: `/css` exports the stylesheet text for shadow roots, and
+  `style.css` still works for pages that draw with `createKeyboard`.
+
+**Checked in Chromium** (`npm run verify:browser`, needs Playwright; not a repository dependency):
+the `examples/vanilla` app ships no React; the element and the function type at the caret of a text
+field and the field keeps the focus, with mouse and with touch; Enter on a focused key keeps the focus on
+it; after a layer key the focus is on the key in the same place; second characters hide at 790 px and
+under (the container query works in a shadow root); `theme`, `numpad` and `update()` change the keyboard;
+the React component and `useKeyboard` work in a small React app.
+
+**Findings**
+
+1. **Page-level `--saccade-*` variables do not recolour the keyboard.** The root sets its own colours, so
+   a variable on the page or on the host never wins. Only the `theme` prop or attribute sets colours.
+   This is the same as before for React, but it matters more for a Web Component, where CSS variables are
+   the usual way to theme. Decision for Phase 4: let host variables be the defaults the theme falls back to.
+2. **axe reports two kinds of issue** in the real browser: `label-content-name-mismatch` on keys with two
+   visible characters (the known Phase 0 finding) and `color-contrast` on some hint characters. Both are
+   Phase 5 work; the check lists them as a note rather than failing.
+3. **Size.** The root entry is 5.2 kB now because it holds the controller the wrapper runs (limit raised
+   from 4.5 to 5.5 kB); `/vanilla` is 3.98 kB (limit 4.5) and `/element` 5.33 kB (limit 6).
+
+Next: Phase 3, language support: `language`, `fallback`, `onReady` and `onError`, `registerLanguage` on
+`/vanilla`, and the per-language `/register` entries.

@@ -62,6 +62,30 @@ import { createLayout } from '@coldsofttech/saccade-fr';
 
 The [package guide](packages/saccade-keyboards/README.md) covers typing into a field, all the options (theme, font, number pad, currency key), sizing and building your own keyboard.
 
+## Without React
+
+For a layout object, the keyboard also works with no framework. Both entries are in the same package; React is not needed.
+
+```js
+import '@coldsofttech/saccade-keyboards/element'; // registers <saccade-keyboard>
+
+const keyboard = document.createElement('saccade-keyboard');
+keyboard.layout = layout;
+keyboard.addEventListener('saccade-key', (e) => console.log(e.detail));
+document.body.append(keyboard);
+```
+
+or, drawing into an element you own:
+
+```js
+import { createKeyboard } from '@coldsofttech/saccade-keyboards/vanilla';
+import '@coldsofttech/saccade-keyboards/style.css';
+
+const { update, destroy } = createKeyboard(container, { layout, onKey });
+```
+
+Choosing a language by name comes in a later release; see [examples/vanilla](examples/vanilla) for a working app.
+
 ## Good to know
 
 - **Size:** the keyboard fills the width of the element it sits in. It needs at least 430 px, or 600 px with the number pad.

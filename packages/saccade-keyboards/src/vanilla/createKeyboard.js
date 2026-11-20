@@ -1,0 +1,284 @@
+import { placeKeys } from '../core/grid.js';
+import { keys as keysFor, numpadRows } from '../core/layout.js';
+import { createKeyboardModel } from '../core/model.js';
+import { CURRENCY_SIGNS } from '../core/typed.js';
+import styles from '../Keyboard.module.css';
+import { createShell } from './shell.js';
+
+/** @typedef {import('../core/layout.js').Layout} Layout */
+/** @typedef {import('../core/layout.js').Key} Key */
+/** @typedef {import('../core/applyKey.js').KeyPress} KeyPress */
+/** @typedef {import('../core/grid.js').PlacedKey} PlacedKey */
+/** @typedef {import('./shell.js').KeyboardController} KeyboardController */
+
+/**
+ * Colours for a custom theme. Anything left out keeps the light theme's colour.
+ *
+ * @typedef {object} ThemeColors
+ * @property {string} [background] Behind the keys.
+ * @property {string} [key] A key.
+ * @property {string} [keyText] Text on a key.
+ * @property {string} [border] Edge of a key.
+ * @property {string} [accent] A key that is on, such as shift.
+ * @property {string} [accentText] Text on a key that is on.
+ */
+
+/**
+ * @typedef {object} KeyboardProps
+ * @property {Layout} layout The layout; the first layer is shown first.
+ * @property {(key: KeyPress) => void} onKey A key was pressed (the space key types a space).
+ * @property {() => void} [onClose] The hide key was pressed.
+ * @property {'light' | 'dark' | ThemeColors} [theme] Colours of the keyboard ('light').
+ * @property {string} [label] The name of the keyboard for a screen reader.
+ * @property {string} [font] The font of the keys: `native` (the device's own font), `sans`, `serif`,
+ *   `mono`, or any CSS font-family list, such as `"Atkinson Hyperlegible", sans-serif` ('native').
+ * @property {boolean} [numpad] Show a number pad beside the keys (false). Its decimal key types the
+ *   `decimal` of the layout.
+ * @property {boolean} [currencypad] Add a currency key before the space key (false). It shows or
+ *   hides a row of currency signs above the keys.
+ * @property {number} [fontSize] The size of the letters on the keys, in pixels (16).
+ */
+
+/** The lighter character of a two-character key; a narrow keyboard hides it until it is typed. */
+const hint = `${styles.secondary} ${styles.hint}`;
+
+const TOKENS = new Map([
+  ['background', '--saccade-background'],
+  ['key', '--saccade-key'],
+  ['keyText', '--saccade-key-text'],
+  ['border', '--saccade-border'],
+  ['accent', '--saccade-accent'],
+  ['accentText', '--saccade-accent-text'],
+]);
+
+/** Fonts every device has, so nothing is bundled and no font licence is involved. */
+const FONTS = new Map([
+  ['native', 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'],
+  ['sans', 'ui-sans-serif, "Helvetica Neue", Arial, sans-serif'],
+  ['serif', 'ui-serif, Georgia, "Times New Roman", serif'],
+  ['mono', 'ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace'],
+]);
+
+/**
+ * Whether a key has a second character of its own, like the ! above the 1, rather than just the
+ * capital of a letter.
+ *
+ * @param {Key} key
+ * @returns {key is import('../core/layout.js').TextKey}
+ */
+const hasSecondCharacter = (key) =>
+  key.type === 'text' && key.shift !== undefined && key.shift !== key.value.toUpperCase();
+
+/**
+ * The rows with a currency key before each space key, which gives up the same width so the row
+ * keeps its length.
+ *
+ * @param {Key[][]} rows
+ * @returns {Key[][]}
+ */
+const withCurrencyKey = (rows) =>
+  rows.map((row) =>
+    row.flatMap((key) =>
+      key.type === 'space'
+        ? [
+            /** @type {Key} */ ({ type: 'currency', width: 1 }),
+            { ...key, width: (key.width ?? 1) - 1 },
+          ]
+        : [key],
+    ),
+  );
+
+/**
+ * An on-screen keyboard for a layout, drawn into a container. It edits nothing: it says which key
+ * was pressed, and whoever uses it types into its own field (see `applyKey`). Pressing a key keeps
+ * the focus where it was.
+ *
+ * The keys stay in the page while the reader types, so a key the reader reached with the keyboard
+ * keeps the focus; only what is on a key is drawn again. The keys are drawn again when the layer, the
+ * number pad or the currency row changes, and the focus goes to the key in the same place.
+ *
+ * @param {HTMLElement | ShadowRoot} container
+ * @param {KeyboardProps} props
+ * @returns {KeyboardController}
+ */
+export function createKeyboard(container, props) {
+  const shell = createShell(container, props, { required: ['layout'] });
+  const { root, h } = shell;
+  const model = createKeyboardModel({
+    layout: props.layout,
+    onKey: (key) => shell.emit('onKey', key),
+    onClose: () => shell.emit('onClose'),
+  });
+  root.setAttribute('role', 'group');
+  // The keys sit where the physical keys are, left to right, whatever way the language reads.
+  root.setAttribute('dir', 'ltr');
+
+  /** @type {Array<{ key: Key, element: HTMLButtonElement }>} */
+  let entries = [];
+  /** @type {{ rows: Key[][], currencyRow: boolean, currencypad: boolean, numpad: boolean, decimal: string | undefined } | null} */
+  let structure = null;
+
+  const keyboardProps = () => /** @type {KeyboardProps} */ (shell.props);
+
+  /** The classes, colours and font of the keyboard. */
+  function appearance() {
+    const { theme = 'light', font = 'native', numpad = false } = keyboardProps();
+    const custom = theme !== null && typeof theme === 'object';
+    const classes = [styles.root];
+    if (theme === 'dark') classes.push(styles.dark);
+    if (numpad) classes.push(styles.wide);
+    root.className = classes.join(' ');
+    for (const token of TOKENS.values()) root.style.removeProperty(token);
+    if (custom) {
+      for (const [name, value] of Object.entries(theme)) {
+        const token = TOKENS.get(name);
+        if (token) root.style.setProperty(token, String(value));
+      }
+    }
+    root.style.fontFamily = FONTS.get(font) ?? font;
+  }
+
+  /**
+   * What is on a key: its characters, which change with shift and AltGr.
+   *
+   * @param {{ key: Key, element: HTMLButtonElement }} entry
+   */
+  function paint({ key, element }) {
+    const { fontSize = 16 } = keyboardProps();
+    const { shift, altGr } = model.getState();
+    const { label: text, caption, name, pressed, disabled } = model.describe(key);
+    element.setAttribute('aria-label', name);
+    if (pressed === undefined) element.removeAttribute('aria-pressed');
+    else element.setAttribute('aria-pressed', String(pressed));
+    element.disabled = Boolean(disabled);
+    element.className = pressed ? `${styles.key} ${styles.active}` : styles.key;
+    element.style.fontSize = `${fontSize}px`;
+
+    /** @type {Array<string | Node>} */
+    const content = [];
+    if (caption) {
+      content.push(
+        h(
+          'span',
+          { class: styles.stack, 'aria-hidden': 'true' },
+          h('span', null, text),
+          h('span', { class: styles.secondary }, caption),
+        ),
+      );
+    } else if (altGr && key.type === 'text' && key.altgr) {
+      content.push(text);
+    } else if (hasSecondCharacter(key)) {
+      content.push(
+        h(
+          'span',
+          { class: styles.stack, 'aria-hidden': 'true' },
+          h('span', { class: shift === 'once' ? null : hint }, key.shift),
+          h('span', { class: shift === 'once' ? hint : null }, key.value),
+        ),
+      );
+    } else {
+      content.push(text);
+    }
+    if (key.type === 'text' && key.altgr && !altGr) {
+      content.push(h('span', { class: styles.altgr, 'aria-hidden': 'true' }, key.altgr));
+    }
+    element.replaceChildren(...content);
+  }
+
+  /** @param {PlacedKey[][]} placed */
+  function buttonsOf(placed) {
+    return placed.flat().map(({ key, column, columnSpan, row, rowSpan }) => {
+      const element = /** @type {HTMLButtonElement} */ (
+        h('button', {
+          type: 'button',
+          // Keep the focus (and the caret) in the field being typed into.
+          onmousedown: (/** @type {Event} */ event) => event.preventDefault(),
+          onclick: () => model.press(key),
+        })
+      );
+      element.style.gridColumn = `${column} / span ${columnSpan}`;
+      element.style.gridRow = `${row} / span ${rowSpan}`;
+      const entry = { key, element };
+      entries.push(entry);
+      return element;
+    });
+  }
+
+  /** Makes the keys, when what they are made from has changed. */
+  function build() {
+    const { rows, currencyOpen } = model.getState();
+    const { currencypad = false, numpad = false } = keyboardProps();
+    const wanted = {
+      rows,
+      currencyRow: currencypad && currencyOpen,
+      currencypad,
+      numpad,
+      decimal: model.layout.decimal,
+    };
+    if (
+      structure &&
+      Object.keys(wanted).every((name) =>
+        Object.is(
+          structure?.[/** @type {keyof typeof wanted} */ (name)],
+          wanted[/** @type {keyof typeof wanted} */ (name)],
+        ),
+      )
+    ) {
+      return;
+    }
+    structure = wanted;
+
+    // The key that has the focus, if it is one of ours, so it can be given back to its place.
+    const active = /** @type {ShadowRoot | Document} */ (root.getRootNode()).activeElement;
+    const focused = entries.findIndex((entry) => entry.element === active);
+    entries = [];
+
+    const main = h('div', { class: styles.main });
+    if (wanted.currencyRow) {
+      main.append(
+        h(
+          'div',
+          { role: 'group', 'aria-label': 'Currency symbols', class: styles.keys },
+          buttonsOf(placeKeys([keysFor(CURRENCY_SIGNS)])),
+        ),
+      );
+    }
+    main.append(
+      h(
+        'div',
+        { class: styles.keys },
+        buttonsOf(placeKeys(currencypad ? withCurrencyKey(rows) : rows)),
+      ),
+    );
+    const parts = [main];
+    if (numpad) {
+      parts.push(
+        h(
+          'div',
+          { role: 'group', 'aria-label': 'Number pad', class: styles.numpad },
+          buttonsOf(placeKeys(numpadRows(model.layout.decimal))),
+        ),
+      );
+    }
+    root.replaceChildren(...parts);
+    if (focused >= 0) entries.at(Math.min(focused, entries.length - 1))?.element.focus();
+  }
+
+  function render() {
+    const { label } = keyboardProps();
+    root.setAttribute('aria-label', label ?? `${model.layout.name} on-screen keyboard`);
+    root.setAttribute('lang', model.layout.id);
+    appearance();
+    build();
+    for (const entry of entries) paint(entry);
+  }
+
+  const stop = model.subscribe(render);
+  shell.cleanup(stop);
+  shell.onUpdate((changed, current) => {
+    if (changed.includes('layout')) model.setLayout(current.layout);
+    else render();
+  });
+  render();
+  return shell.api;
+}

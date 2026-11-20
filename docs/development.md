@@ -24,7 +24,8 @@ All scripts run from the repository root.
 - Plain JavaScript (`.jsx` for components) with ES modules. Types are written as JSDoc and checked through `jsconfig.json`.
 - Each package declares `exports`, `types`, `files` and `sideEffects: false`, and builds and tests on its own. Its test environment is set in its `vite.config.js`.
 - React and `react-dom` are `peerDependencies` (`^18 || ^19`), never bundled, and optional (the engine in `core` needs no React). `npm run check:packages` fails if a build contains React, or if `core` or a language package can reach it.
-- React-free code (`core`, and later `vanilla` and `element`) draws into the container it is given, which may be a shadow root: use `container.ownerDocument`, never the global `document`, and import no React. ESLint enforces both.
+- `npm run verify:browser` (after `npm run build`; needs Playwright with Chromium) drives the examples in a real browser: focus, caret, touch, shadow-root styling and the React wrapper.
+- React-free code (`core`, `vanilla` and `element`) draws into the container it is given, which may be a shadow root: use `container.ownerDocument`, never the global `document`, and import no React. ESLint enforces both.
 - `test-support/` holds the conformance suite and the adapters that run a keyboard through every entry point, and a stub keyboard that proves them.
 - Components and hooks are named exports and document props with JSDoc typedefs. Styles are CSS modules, shipped as one `style.css` that consumers import (`@coldsofttech/saccade-keyboards/style.css`).
 - Packages are client-only unless stated otherwise. If an entry needs `"use client"`, make sure the build keeps the directive.

@@ -1,0 +1,15 @@
+{
+  "name": "vanilla-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@coldsofttech/saccade-en": "*",
+    "@coldsofttech/saccade-keyboards": "*",
+    "@coldsofttech/saccade-ur": "*"
+  }
+}

@@ -15,7 +15,7 @@ const four = { type: 'text', value: '4', shift: '$', altgr: '€' };
 
 /** A small layout with every kind of key the rules need: letters, shift, caps, AltGr, layers. */
 export const layout = {
-  id: 'xx',
+  id: 'en',
   name: 'Test',
   dir: 'ltr',
   layers: {
@@ -38,7 +38,7 @@ export const layout = {
 
 /** A second layout, with one layer of its own. */
 export const other = {
-  id: 'yy',
+  id: 'de',
   name: 'Other',
   dir: 'ltr',
   layers: { only: [[{ type: 'text', value: 'z' }]] },

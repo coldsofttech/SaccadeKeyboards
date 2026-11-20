@@ -1,11 +1,12 @@
 {
   "name": "@coldsofttech/saccade-keyboards",
   "version": "0.1.0",
-  "description": "On-screen keyboards for React. Pick a language, or build your own layout from data.",
+  "description": "On-screen keyboards for React, plain JavaScript and as a Web Component. Pick a language, or build your own layout from data.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
-    "**/*.css"
+    "**/*.css",
+    "./dist/element.js"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -18,6 +19,18 @@
     "./core": {
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
+    },
+    "./vanilla": {
+      "types": "./dist/vanilla/index.d.ts",
+      "import": "./dist/vanilla/index.js"
+    },
+    "./element": {
+      "types": "./dist/element.d.ts",
+      "import": "./dist/element.js"
+    },
+    "./css": {
+      "types": "./dist/style.css.d.ts",
+      "import": "./dist/style.css.js"
     },
     "./style.css": "./dist/style.css"
   },

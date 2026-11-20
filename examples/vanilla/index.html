@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saccade Keyboards without React</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        font-family: system-ui, sans-serif;
+      }
+      textarea,
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        font: inherit;
+      }
+      h2 {
+        margin: 24px 0 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Saccade Keyboards without React</h1>
+    <p>
+      <button id="theme" type="button">Toggle dark</button>
+      <button id="numpad" type="button">Toggle number pad</button>
+    </p>
+    <textarea id="field" rows="3" aria-label="Text">hello</textarea>
+
+    <h2>Web Component</h2>
+    <saccade-keyboard id="element" label="Type here"></saccade-keyboard>
+
+    <h2>Plain JavaScript</h2>
+    <div id="host"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

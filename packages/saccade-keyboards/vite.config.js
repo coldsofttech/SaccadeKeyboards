@@ -1,11 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import cssModule from '../../scripts/vite-plugin-css-module.js';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), cssModule()],
   build: {
     lib: {
-      entry: { index: 'src/index.js', 'core/index': 'src/core/index.js' },
+      entry: {
+        index: 'src/index.js',
+        'core/index': 'src/core/index.js',
+        'vanilla/index': 'src/vanilla/index.js',
+        element: 'src/element.js',
+      },
       formats: ['es'],
     },
     sourcemap: true,
