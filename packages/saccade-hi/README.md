@@ -10,6 +10,19 @@ npm install @coldsofttech/saccade-keyboards @coldsofttech/saccade-hi
 
 ## Use it
 
+Without React, import the `/register` entry (it registers `hi`, and the layout loads when a keyboard first asks for it):
+
+```js
+import '@coldsofttech/saccade-keyboards/element';
+import '@coldsofttech/saccade-hi/register';
+```
+
+```html
+<saccade-keyboard language="hi"></saccade-keyboard>
+```
+
+With React:
+
 ```jsx
 import { Keyboard, registerLanguage } from '@coldsofttech/saccade-keyboards';
 

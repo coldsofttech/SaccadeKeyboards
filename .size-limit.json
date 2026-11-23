@@ -17,14 +17,14 @@
     "name": "@coldsofttech/saccade-keyboards/vanilla",
     "path": "packages/saccade-keyboards/dist/vanilla/index.js",
     "import": "*",
-    "limit": "4.5 kB",
+    "limit": "5.5 kB",
     "ignore": ["react", "react-dom"]
   },
   {
     "name": "@coldsofttech/saccade-keyboards/element",
     "path": "packages/saccade-keyboards/dist/element.js",
     "import": "*",
-    "limit": "6 kB",
+    "limit": "7 kB",
     "ignore": ["react", "react-dom"]
   },
   {

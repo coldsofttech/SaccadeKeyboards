@@ -134,6 +134,30 @@ registerLanguage('fr', () => import('@coldsofttech/saccade-fr'));
 <Keyboard language="fr" onKey={onKey} fallback={<p>Loading keyboard…</p>} />;
 ```
 
+### Without React
+
+`@coldsofttech/saccade-keyboards/vanilla` and `/element` take the same `language` and `fallback`, and each language package has a `/register` entry that does the `registerLanguage` call for you:
+
+```js
+import '@coldsofttech/saccade-keyboards/element'; // registers <saccade-keyboard>
+import '@coldsofttech/saccade-fr/register'; // makes language="fr" work
+```
+
+```html
+<saccade-keyboard language="fr" fallback="Loading keyboard…"></saccade-keyboard>
+```
+
+```js
+import { createKeyboard, registerLanguage } from '@coldsofttech/saccade-keyboards/vanilla';
+
+registerLanguage('en', () => import('@coldsofttech/saccade-en'));
+createKeyboard(container, { language: 'en', onKey, onReady, onError });
+```
+
+- `onReady(layout)` (event `saccade-ready`) runs when the language has loaded; `onError(error)` (event `saccade-error`) when it could not, and the keyboard shows the message. A `layout` prop wins over `language`.
+- Changing `language` while one is loading keeps only the latest: a slow older one never replaces it. The `fallback` shows while the new layout loads.
+- `registerLanguage`, `languages` and `loadLayout` are exported from `/vanilla` as well as `/core` and the main entry; they share one registry.
+
 ## Build your own
 
 `@coldsofttech/saccade-keyboards/core` has what you need to write a layout or to draw the keys yourself. It uses no React, so a language package, or an app with no React, can import it:

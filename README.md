@@ -84,7 +84,7 @@ import '@coldsofttech/saccade-keyboards/style.css';
 const { update, destroy } = createKeyboard(container, { layout, onKey });
 ```
 
-Choosing a language by name comes in a later release; see [examples/vanilla](examples/vanilla) for a working app.
+A language is chosen by name too: `import '@coldsofttech/saccade-en/register'`, then `<saccade-keyboard language="en">` or `createKeyboard(container, { language: 'en', onKey })`. See [examples/vanilla](examples/vanilla) for a working app.
 
 ## Good to know
 

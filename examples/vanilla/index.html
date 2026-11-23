@@ -25,13 +25,26 @@
   <body>
     <h1>Saccade Keyboards without React</h1>
     <p>
+      <label>
+        Language
+        <select id="language">
+          <option value="en">English</option>
+          <option value="ur">Urdu</option>
+          <option value="zz">Not installed</option>
+        </select>
+      </label>
       <button id="theme" type="button">Toggle dark</button>
       <button id="numpad" type="button">Toggle number pad</button>
     </p>
     <textarea id="field" rows="3" aria-label="Text">hello</textarea>
 
     <h2>Web Component</h2>
-    <saccade-keyboard id="element" label="Type here"></saccade-keyboard>
+    <saccade-keyboard
+      id="element"
+      language="en"
+      fallback="Loading keys"
+      label="Type here"
+    ></saccade-keyboard>
 
     <h2>Plain JavaScript</h2>
     <div id="host"></div>

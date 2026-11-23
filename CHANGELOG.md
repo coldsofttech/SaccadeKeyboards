@@ -11,6 +11,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 - `@coldsofttech/saccade-keyboards/vanilla`: `createKeyboard(container, props)` draws a keyboard for a layout object with no framework and returns `{ element, update, destroy }`.
 - `@coldsofttech/saccade-keyboards/element`: the `<saccade-keyboard>` Web Component (Shadow DOM; attributes `theme`, `label`, `font`, `font-size`, `numpad`, `currencypad`; property `layout`; events `saccade-key`, `saccade-close`), and `/css` with its stylesheet text.
+- Language support on every entry point: `createKeyboard` and `<saccade-keyboard>` take `language`, `fallback`, `onReady` and `onError` (events `saccade-ready` and `saccade-error`), a newer language wins over a slower older one, and the React `Keyboard` gets `onReady` and `onError`. `registerLanguage`, `languages` and `loadLayout` are also exported from `/vanilla`.
+- Each language package (`saccade-en`, `-es`, `-fr`, `-hi`, `-te`, `-ur`) has a `/register` entry: `import '@coldsofttech/saccade-en/register'` makes `language="en"` work.
 - `examples/vanilla`: an app with no React that types into a field with the element and with `createKeyboard`.
 - `npm run verify:browser` checks all three entry points in Chromium (needs Playwright).
 

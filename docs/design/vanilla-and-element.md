@@ -1,6 +1,6 @@
 # Design: vanilla JS and Web Component entry points
 
-Status: **Phase 0 approved; Phases 1 and 2 built** (see [Phase 2](#phase-2-the-keyboard-on-all-three-entry-points)). `/core`
+Status: **Phase 0 approved; Phases 1 to 3 built** (see [Phase 3](#phase-3-languages)). `/core`
 is React-free, the model exists and `useKeyboard` runs on it; `/vanilla`, `/element` and `/css` now
 draw a keyboard for a layout object. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
 decisions below; their results are in [Spike results](#spike-results).
@@ -401,3 +401,47 @@ the React component and `useKeyboard` work in a small React app.
 
 Next: Phase 3, language support: `language`, `fallback`, `onReady` and `onError`, `registerLanguage` on
 `/vanilla`, and the per-language `/register` entries.
+
+## Phase 3: languages
+
+Status: **built**. `language` works on `createKeyboard` and `<saccade-keyboard>`, and every language package
+has a `/register` entry.
+
+- **`createKeyboard`** takes `language`, `fallback` (text or a node), `onReady(layout)` and `onError(error)`,
+  and needs a `layout` or a `language` (it throws a `TypeError` with neither). A `layout` wins. A
+  language is loaded with the shared registry through the shell's cancellable load, so changing
+  `language` while one is loading drops the older result: the newer language wins. While it loads
+  the keyboard shows the `fallback`; if it fails it shows `<p role="alert">` with the message, which says
+  which package to install, and calls `onError`. Removing it while loading calls nothing.
+- **`<saccade-keyboard>`** has the attributes `language` and `fallback`, and the events `saccade-ready`
+  (`detail` is the layout) and `saccade-error` (`detail` is the `Error`). It waits for a `layout` or a
+  `language`.
+- **`/vanilla`** exports `registerLanguage`, `languages` and `loadLayout`. They are the same functions
+  as in `/core` and the root: one registry, because the entries share one built chunk.
+- **`/register`** on `saccade-en`, `-es`, `-fr`, `-hi`, `-te` and `-ur` is
+  `registerLanguage('<code>', () => import('./index.js'))`, listed in `sideEffects`, so the layout is a
+  separate file fetched on first use. `check:packages` follows both `.` and `./register` and fails if
+  either reaches React.
+- **React** `Keyboard` keeps its own loading (its `fallback` is a React node, which the controller cannot
+  take) and gains `onReady` and `onError`. What it draws is still `createKeyboard` through
+  `LayoutKeyboard`.
+
+**Tests.** `language.conformance.test.jsx` runs seven behaviours on the function, the element and the
+React `Keyboard`: loading and `onReady`, the fallback, the install message and `onError`, an invalid layout,
+the newer language winning over a slower one, `layout` over `language`, and nothing called after removal. Each
+language package tests that its `register` entry registers the code and loads a valid layout.
+
+**Checked in Chromium** (`npm run verify:browser`): the example page's `language="en"` and
+`createKeyboard({ language: 'en' })` show English; a `<select>` switches both to Urdu; an unknown code
+shows the install message; the page still has no React.
+
+**Findings**
+
+1. **The React `Keyboard` still has its own loader.** Fifteen lines duplicate what `createKeyboard` does,
+   because a React node cannot be passed to the controller. Drawing is shared; loading is not. Accepted.
+2. **Size.** Loading and the status view add about 1 kB: `/vanilla` is 4.95 kB (limit 5.5) and `/element`
+   6.26 kB (limit 7); the root is 5.43 kB (limit 5.5).
+3. **A switch shows the fallback**, as the React component does, rather than the old keys until the new
+   layout arrives. Keeping the old keys would need a decision about the focus; left for Phase 4.
+
+Next: Phase 4, features and edge cases: `field` / `for` typing, theme variables, IME and touch.

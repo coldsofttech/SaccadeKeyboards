@@ -1,6 +1,7 @@
 import { placeKeys } from '../core/grid.js';
 import { keys as keysFor, numpadRows } from '../core/layout.js';
 import { createKeyboardModel } from '../core/model.js';
+import { loadLayout } from '../core/registry.js';
 import { CURRENCY_SIGNS } from '../core/typed.js';
 import styles from '../Keyboard.module.css';
 import { createShell } from './shell.js';
@@ -25,9 +26,14 @@ import { createShell } from './shell.js';
 
 /**
  * @typedef {object} KeyboardProps
- * @property {Layout} layout The layout; the first layer is shown first.
+ * @property {Layout} [layout] The layout; the first layer is shown first. It wins over `language`.
+ * @property {string} [language] A registered language code, such as `en`. The layout is loaded the
+ *   first time it is needed; a code with no package says which one to install.
+ * @property {string | Node} [fallback] Shown while a language loads: text, or an element.
+ * @property {(layout: Layout) => void} [onReady] A language has loaded and the keyboard is shown.
  * @property {(key: KeyPress) => void} onKey A key was pressed (the space key types a space).
  * @property {() => void} [onClose] The hide key was pressed.
+ * @property {(error: Error) => void} [onError] A language could not be loaded.
  * @property {'light' | 'dark' | ThemeColors} [theme] Colours of the keyboard ('light').
  * @property {string} [label] The name of the keyboard for a screen reader.
  * @property {string} [font] The font of the keys: `native` (the device's own font), `sans`, `serif`,
@@ -102,14 +108,17 @@ const withCurrencyKey = (rows) =>
  * @returns {KeyboardController}
  */
 export function createKeyboard(container, props) {
-  const shell = createShell(container, props, { required: ['layout'] });
+  if (!props || (!props.layout && !props.language)) {
+    throw new TypeError('The "layout" or the "language" prop is required.');
+  }
+  const shell = createShell(container, props);
   const { root, h } = shell;
-  const model = createKeyboardModel({
-    layout: props.layout,
-    onKey: (key) => shell.emit('onKey', key),
-    onClose: () => shell.emit('onClose'),
-  });
-  root.setAttribute('role', 'group');
+  /** @type {ReturnType<typeof createKeyboardModel> | null} */
+  let model = null;
+  /** What the keyboard shows: a status while a language loads or fails, or the keys. */
+  let phase = /** @type {'loading' | 'error' | 'ready'} */ ('loading');
+  /** @type {Error | null} */
+  let failure = null;
   // The keys sit where the physical keys are, left to right, whatever way the language reads.
   root.setAttribute('dir', 'ltr');
 
@@ -119,6 +128,7 @@ export function createKeyboard(container, props) {
   let structure = null;
 
   const keyboardProps = () => /** @type {KeyboardProps} */ (shell.props);
+  const keyboardModel = () => /** @type {ReturnType<typeof createKeyboardModel>} */ (model);
 
   /** The classes, colours and font of the keyboard. */
   function appearance() {
@@ -145,8 +155,8 @@ export function createKeyboard(container, props) {
    */
   function paint({ key, element }) {
     const { fontSize = 16 } = keyboardProps();
-    const { shift, altGr } = model.getState();
-    const { label: text, caption, name, pressed, disabled } = model.describe(key);
+    const { shift, altGr } = keyboardModel().getState();
+    const { label: text, caption, name, pressed, disabled } = keyboardModel().describe(key);
     element.setAttribute('aria-label', name);
     if (pressed === undefined) element.removeAttribute('aria-pressed');
     else element.setAttribute('aria-pressed', String(pressed));
@@ -193,7 +203,7 @@ export function createKeyboard(container, props) {
           type: 'button',
           // Keep the focus (and the caret) in the field being typed into.
           onmousedown: (/** @type {Event} */ event) => event.preventDefault(),
-          onclick: () => model.press(key),
+          onclick: () => keyboardModel().press(key),
         })
       );
       element.style.gridColumn = `${column} / span ${columnSpan}`;
@@ -206,14 +216,14 @@ export function createKeyboard(container, props) {
 
   /** Makes the keys, when what they are made from has changed. */
   function build() {
-    const { rows, currencyOpen } = model.getState();
+    const { rows, currencyOpen } = keyboardModel().getState();
     const { currencypad = false, numpad = false } = keyboardProps();
     const wanted = {
       rows,
       currencyRow: currencypad && currencyOpen,
       currencypad,
       numpad,
-      decimal: model.layout.decimal,
+      decimal: keyboardModel().layout.decimal,
     };
     if (
       structure &&
@@ -256,7 +266,7 @@ export function createKeyboard(container, props) {
         h(
           'div',
           { role: 'group', 'aria-label': 'Number pad', class: styles.numpad },
-          buttonsOf(placeKeys(numpadRows(model.layout.decimal))),
+          buttonsOf(placeKeys(numpadRows(keyboardModel().layout.decimal))),
         ),
       );
     }
@@ -264,8 +274,25 @@ export function createKeyboard(container, props) {
     if (focused >= 0) entries.at(Math.min(focused, entries.length - 1))?.element.focus();
   }
 
+  /** Draws the keys, or the status shown while there are none. */
   function render() {
+    if (phase !== 'ready' || !model) {
+      entries = [];
+      structure = null;
+      root.removeAttribute('role');
+      root.removeAttribute('aria-label');
+      root.removeAttribute('lang');
+      root.className = styles.root;
+      if (phase === 'error') {
+        root.replaceChildren(h('p', { role: 'alert' }, failure?.message ?? ''));
+      } else {
+        const { fallback } = keyboardProps();
+        root.replaceChildren(...(fallback === undefined ? [] : [fallback]));
+      }
+      return;
+    }
     const { label } = keyboardProps();
+    root.setAttribute('role', 'group');
     root.setAttribute('aria-label', label ?? `${model.layout.name} on-screen keyboard`);
     root.setAttribute('lang', model.layout.id);
     appearance();
@@ -273,12 +300,56 @@ export function createKeyboard(container, props) {
     for (const entry of entries) paint(entry);
   }
 
-  const stop = model.subscribe(render);
-  shell.cleanup(stop);
-  shell.onUpdate((changed, current) => {
-    if (changed.includes('layout')) model.setLayout(current.layout);
+  /** @param {Layout} layout */
+  function show(layout) {
+    phase = 'ready';
+    if (model) model.setLayout(layout);
+    else {
+      model = createKeyboardModel({
+        layout,
+        onKey: (key) => shell.emit('onKey', key),
+        onClose: () => shell.emit('onClose'),
+      });
+      shell.cleanup(model.subscribe(render));
+    }
+    render();
+  }
+
+  /** Shows the layout given, or loads the language; the latest request wins. */
+  function resolve() {
+    const { layout, language } = keyboardProps();
+    if (layout) {
+      shell.cancel();
+      show(layout);
+      return;
+    }
+    if (!language) {
+      shell.cancel();
+      failure = new TypeError('The "layout" or the "language" prop is required.');
+      phase = 'error';
+      render();
+      return;
+    }
+    phase = 'loading';
+    render();
+    shell.load(() => loadLayout(language), {
+      onResult(loaded) {
+        show(loaded);
+        shell.emit('onReady', loaded);
+      },
+      onError(error) {
+        failure = error;
+        phase = 'error';
+        render();
+        shell.emit('onError', error);
+      },
+    });
+  }
+
+  shell.onUpdate((changed) => {
+    if (changed.includes('layout') || changed.includes('language')) resolve();
     else render();
   });
-  render();
+  resolve();
   return shell.api;
 }

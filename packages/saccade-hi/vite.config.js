@@ -5,7 +5,7 @@ const core = fileURLToPath(new URL('../saccade-keyboards/src/core/index.js', imp
 
 export default defineConfig({
   build: {
-    lib: { entry: { index: 'src/index.js' }, formats: ['es'] },
+    lib: { entry: { index: 'src/index.js', register: 'src/register.js' }, formats: ['es'] },
     sourcemap: true,
     rollupOptions: {
       // The engine is a peer dependency and must never be bundled.

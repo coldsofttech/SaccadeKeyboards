@@ -8,6 +8,19 @@ npm install @coldsofttech/saccade-keyboards @coldsofttech/saccade-fr
 
 ## Use it
 
+Without React, import the `/register` entry (it registers `fr`, and the layout loads when a keyboard first asks for it):
+
+```js
+import '@coldsofttech/saccade-keyboards/element';
+import '@coldsofttech/saccade-fr/register';
+```
+
+```html
+<saccade-keyboard language="fr"></saccade-keyboard>
+```
+
+With React:
+
 ```jsx
 import { Keyboard, registerLanguage } from '@coldsofttech/saccade-keyboards';
 

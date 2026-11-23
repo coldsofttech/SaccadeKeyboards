@@ -73,6 +73,7 @@ try {
     await page.waitForFunction(() =>
       document.querySelector('#element')?.shadowRoot?.querySelector('button'),
     );
+    await page.waitForSelector('#host button');
     const press = (where, name) => {
       const key = page.locator(`${where} button[aria-label="${name}"]`).first();
       return touch ? key.tap() : key.click();
@@ -127,6 +128,60 @@ try {
   await page.waitForFunction(() =>
     document.querySelector('#element')?.shadowRoot?.querySelector('button'),
   );
+  await page.waitForSelector('#host button');
+
+  // Languages load on demand, and the page can switch them.
+  const keysOf = () =>
+    page.evaluate(() => ({
+      element: [...document.querySelector('#element').shadowRoot.querySelectorAll('button')].map(
+        (b) => b.getAttribute('aria-label'),
+      ),
+      host: [...document.querySelectorAll('#host button')].map((b) => b.getAttribute('aria-label')),
+      lang: document
+        .querySelector('#element')
+        .shadowRoot.querySelector('[role="group"]')
+        ?.getAttribute('lang'),
+    }));
+  const before = await keysOf();
+  check(
+    'language: language="en" shows the English keys in the element and in the function',
+    before.lang === 'en-US' && before.element.includes('q') && before.host.includes('q'),
+    String(before.lang),
+  );
+  await page.selectOption('#language', 'ur');
+  await page.waitForFunction(() =>
+    document
+      .querySelector('#element')
+      .shadowRoot.querySelector('[role="group"]')
+      ?.getAttribute('lang')
+      ?.startsWith('ur'),
+  );
+  await page.waitForFunction(() =>
+    document.querySelector('#host [role="group"]')?.getAttribute('lang')?.startsWith('ur'),
+  );
+  const urdu = await keysOf();
+  check(
+    'language: switching to ur changes the element and the function to the Urdu keys',
+    !urdu.element.includes('q') && !urdu.host.includes('q'),
+    urdu.lang,
+  );
+  await page.selectOption('#language', 'zz');
+  await page.waitForFunction(() =>
+    document.querySelector('#element').shadowRoot.querySelector('[role="alert"]'),
+  );
+  const alertText = await page.evaluate(
+    () => document.querySelector('#element').shadowRoot.querySelector('[role="alert"]').textContent,
+  );
+  check(
+    'language: an unknown code shows which package to install',
+    /saccade-zz/.test(alertText),
+    alertText,
+  );
+  await page.selectOption('#language', 'en');
+  await page.waitForFunction(() =>
+    document.querySelector('#element').shadowRoot.querySelector('button'),
+  );
+  await page.waitForSelector('#host button');
 
   // The plain function draws in the page and is styled by style.css.
   const light = await page.evaluate(() => {

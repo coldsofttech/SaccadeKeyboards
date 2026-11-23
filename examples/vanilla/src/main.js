@@ -2,11 +2,14 @@
 import '@coldsofttech/saccade-keyboards/element';
 
 // Plain JavaScript: call the keyboard's function with an element, and import its stylesheet.
-import { createKeyboard } from '@coldsofttech/saccade-keyboards/vanilla';
+import { createKeyboard, registerLanguage } from '@coldsofttech/saccade-keyboards/vanilla';
 import { applyKey } from '@coldsofttech/saccade-keyboards/core';
 import '@coldsofttech/saccade-keyboards/style.css';
 
-import { layout as english } from '@coldsofttech/saccade-en';
+// Languages: importing a package's /register entry makes its code work. Registering by hand does
+// the same, and nothing is loaded until a keyboard asks for the language.
+import '@coldsofttech/saccade-en/register';
+registerLanguage('ur', () => import('@coldsofttech/saccade-ur'));
 
 const field = document.getElementById('field');
 
@@ -21,15 +24,16 @@ function type(key) {
   field.setSelectionRange(selection.start, selection.end);
 }
 
-// The element: a layout goes in the `layout` property, and each key comes out as an event.
+// The element: `language="en"` is in the markup; each key comes out as an event.
 const element = document.getElementById('element');
-element.layout = english;
 element.addEventListener('saccade-key', (event) => type(event.detail));
 element.addEventListener('saccade-close', () => console.log('hide'));
 
 // The function: the same keyboard drawn into an ordinary element.
 const keyboard = createKeyboard(document.getElementById('host'), {
-  layout: english,
+  language: 'en',
+  fallback: 'Loading keys',
+  onError: (error) => console.error(error),
   onKey: type,
   currencypad: true,
 });
@@ -48,4 +52,11 @@ document.getElementById('numpad').addEventListener('click', () => {
   if (numpad) element.setAttribute('numpad', '');
   else element.removeAttribute('numpad');
   keyboard.update({ numpad });
+});
+
+// Change the language of both keyboards. An unknown code shows which package to install.
+document.getElementById('language').addEventListener('change', (event) => {
+  const code = event.target.value;
+  element.setAttribute('language', code);
+  keyboard.update({ language: code });
 });

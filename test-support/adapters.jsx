@@ -20,7 +20,12 @@ export function vanillaAdapter(create) {
 /** The Web Component: `define()` registers it and returns its class. */
 export function elementAdapter(tag, define) {
   define(tag);
-  const EVENTS = { onKey: 'saccade-key', onClose: 'saccade-close' };
+  const EVENTS = {
+    onKey: 'saccade-key',
+    onClose: 'saccade-close',
+    onReady: 'saccade-ready',
+    onError: 'saccade-error',
+  };
   return {
     name: 'web component',
     acceptsShadowRoot: false,

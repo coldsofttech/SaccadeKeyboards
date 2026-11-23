@@ -56,7 +56,7 @@ A sign that only sits on a letter, such as a vowel sign or a virama, is shown on
 1. Create a package `@coldsofttech/saccade-<id>` that exports the layout as `layout` and depends on `@coldsofttech/saccade-keyboards` as a peer.
 2. Add a test that runs `validateLayout`.
 3. List its font (if any) in `fonts` and document how to load it.
-4. Apps register it with `registerLanguage('<id>', () => import('@coldsofttech/saccade-<id>'))` so `language="<id>"` finds it, or pass the layout through the `layout` prop.
+4. Apps register it with `registerLanguage('<id>', () => import('@coldsofttech/saccade-<id>'))` so `language="<id>"` finds it (or gives the package a `/register` entry that does the call, as the official ones have), or pass the layout through the `layout` prop.
 
 `@coldsofttech/saccade-en` is the reference: it exports `layout` (QWERTY) and `createLayout(type, region)`.
 
