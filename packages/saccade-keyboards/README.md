@@ -1,6 +1,14 @@
 # @coldsofttech/saccade-keyboards
 
-On-screen keyboards for React. Pick a language, or build your own layout from data. React and `react-dom` 18 or 19 must be installed in your app.
+On-screen keyboards for React, plain JavaScript and Web Components. Pick a language, or build your own layout from data. React and `react-dom` 18 or 19 are needed only for the React entry (the main one); `/core`, `/vanilla` and `/element` do not use them.
+
+| Import                            | What it is                                             | Needs React |
+| --------------------------------- | ------------------------------------------------------ | ----------- |
+| `@coldsofttech/saccade-keyboards` | the `Keyboard` component and `useKeyboard`             | yes         |
+| `…/vanilla`                       | `createKeyboard(container, props)`, `registerLanguage` | no          |
+| `…/element`                       | the `<saccade-keyboard>` Web Component (Shadow DOM)    | no          |
+| `…/core`                          | the keyboard model, `applyKey`, layout helpers         | no          |
+| `…/css`, `…/style.css`            | the stylesheet as text, and as a file                  | no          |
 
 ```bash
 npm install @coldsofttech/saccade-keyboards

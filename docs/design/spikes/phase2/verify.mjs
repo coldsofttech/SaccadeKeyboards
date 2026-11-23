@@ -326,21 +326,48 @@ try {
     document.querySelector('#element').field = '#field';
   });
 
-  // Accessibility.
-  await page.addScriptTag({ path: join(root, 'node_modules/axe-core/axe.min.js') });
-  const violations = await page.evaluate(async () => {
-    const out = [];
-    for (const target of [document.querySelector('#element'), document.querySelector('#host')]) {
-      const result = await window.axe.run(target);
-      for (const v of result.violations) out.push(`${v.id} (${v.nodes.length}): ${v.help}`);
+  // Accessibility, with axe-core, in every look: light and dark, with and without the number pad,
+  // and with Shift and Caps Lock on (keys that are on have their own colours).
+  const axePath = join(root, 'node_modules/axe-core/axe.min.js');
+  const violations = [];
+  for (const dark of [false, true]) {
+    for (const pad of [false, true]) {
+      await page.goto(url);
+      await page.waitForFunction(() =>
+        document.querySelector('#element')?.shadowRoot?.querySelector('button'),
+      );
+      await page.waitForSelector('#host button');
+      if (dark) await page.click('#theme');
+      if (pad) await page.click('#numpad');
+      await page.evaluate(() => {
+        for (const root of [
+          document.querySelector('#element').shadowRoot,
+          document.querySelector('#host'),
+        ]) {
+          root.querySelector('button[aria-label="Shift"]').click();
+          root.querySelector('button[aria-label="Caps lock"]').click();
+        }
+      });
+      await page.addScriptTag({ path: axePath });
+      const found = await page.evaluate(async () => {
+        const out = [];
+        for (const target of [
+          document.querySelector('#element'),
+          document.querySelector('#host'),
+        ]) {
+          const result = await window.axe.run(target);
+          for (const v of result.violations) out.push(`${v.id} (${v.nodes.length}): ${v.help}`);
+        }
+        return out;
+      });
+      for (const f of found)
+        violations.push(`${dark ? 'dark' : 'light'}${pad ? '+numpad' : ''}: ${f}`);
     }
-    return out;
-  });
+  }
   check(
-    'a11y: axe-core finds no violations in the element or the function (light theme, dark theme and number pad)',
+    'a11y: axe-core finds no violations in the element or the function (light, dark, number pad, shift and caps on)',
     violations.length === 0,
     [...new Set(violations)].join(' | '),
-    true,
   );
   await page.close();
   server.close();

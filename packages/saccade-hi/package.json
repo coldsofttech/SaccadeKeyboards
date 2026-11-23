@@ -1,6 +1,6 @@
 {
   "name": "@coldsofttech/saccade-hi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Hindi keyboard layouts (InScript and phonetic) for @coldsofttech/saccade-keyboards.",
   "license": "MIT",
   "type": "module",
@@ -45,6 +45,6 @@
     "check:packages": "node ../../scripts/check-vanilla-no-react.js --entries .,./register"
   },
   "peerDependencies": {
-    "@coldsofttech/saccade-keyboards": "^0.1.0"
+    "@coldsofttech/saccade-keyboards": "^0.2.0"
   }
 }

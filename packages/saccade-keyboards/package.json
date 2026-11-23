@@ -1,6 +1,6 @@
 {
   "name": "@coldsofttech/saccade-keyboards",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "On-screen keyboards for React, plain JavaScript and as a Web Component. Pick a language, or build your own layout from data.",
   "license": "MIT",
   "type": "module",

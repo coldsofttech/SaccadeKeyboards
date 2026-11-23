@@ -76,10 +76,29 @@ jobs:
       - name: Bundle size
         run: npm run size
 
+  # The built keyboard in a real browser: focus, caret, touch, shadow-root styling, languages, field
+  # typing, the React wrapper, and axe-core. Playwright is not a dependency of the repository.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - run: npm run verify:browser
+
   # Single required status check for the branch ruleset.
   ci:
     if: always()
-    needs: [lint, test, build]
+    needs: [lint, test, build, browser]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -88,6 +107,8 @@ jobs:
           echo "lint:  ${{ needs.lint.result }}"
           echo "test:  ${{ needs.test.result }}"
           echo "build: ${{ needs.build.result }}"
+          echo "browser: ${{ needs.browser.result }}"
           [ "${{ needs.lint.result }}" = success ] &&
           [ "${{ needs.test.result }}" = success ] &&
-          [ "${{ needs.build.result }}" = success ]
+          [ "${{ needs.build.result }}" = success ] &&
+          [ "${{ needs.browser.result }}" = success ]

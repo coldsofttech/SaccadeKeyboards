@@ -67,7 +67,9 @@ describe('Keyboard', () => {
     };
     render(<Keyboard layout={withDigits} onKey={onKey} />);
     const one = screen.getByRole('button', { name: '1' });
-    expect(one).toHaveTextContent('!1');
+    // The typed character is text; the ! above it is drawn from data-char, so the name "1" is in the text.
+    expect(one).toHaveTextContent(/^1$/);
+    expect(one.querySelector('[data-char]')).toHaveAttribute('data-char', '!');
     await userEvent.click(one);
     await userEvent.click(screen.getByRole('button', { name: 'Shift' }));
     await userEvent.click(screen.getByRole('button', { name: 'exclamation mark' }));
@@ -94,7 +96,9 @@ describe('Keyboard', () => {
       },
     };
     render(<Keyboard layout={withAltGr} onKey={onKey} />);
-    expect(screen.getByRole('button', { name: 'e' })).toHaveTextContent('eé');
+    const e = screen.getByRole('button', { name: 'e' });
+    expect(e).toHaveTextContent(/^e$/);
+    expect(e.querySelector('[data-char]')).toHaveAttribute('data-char', 'é');
     await userEvent.click(screen.getByRole('button', { name: 'AltGr' }));
     expect(screen.getByRole('button', { name: 'AltGr' })).toHaveAttribute('aria-pressed', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'é' }));

@@ -97,6 +97,16 @@
   opacity: 0.65;
 }
 
+/* On a key that is on, the caption keeps full strength: faded text on the accent colour is too faint. */
+.active .secondary {
+  opacity: 1;
+}
+
+/* A character that is only drawn, from data-char, so it is not text in the page. */
+.ghost::before {
+  content: attr(data-char);
+}
+
 /* The third character of a key, typed after AltGr, sits in the corner. */
 .altgr {
   position: absolute;

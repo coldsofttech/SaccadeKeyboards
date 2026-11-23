@@ -80,7 +80,12 @@ describe('createKeyboard', () => {
     const four = key(root, '4');
     // 4 with $ above it, and € in the corner: the stack and the corner mark are hidden from a screen reader.
     expect(four.querySelectorAll('[aria-hidden="true"]')).toHaveLength(2);
-    expect(four).toHaveTextContent('$4€');
+    // Only the typed character is text; the others are drawn from data-char (see ghost()).
+    expect(four).toHaveTextContent(/^4$/);
+    expect([...four.querySelectorAll('[data-char]')].map((s) => s.dataset.char)).toEqual([
+      '$',
+      '€',
+    ]);
     key(root, 'AltGr').click();
     expect(key(root, 'euro')).toHaveTextContent('€');
     expect(key(root, 'euro').querySelector('[aria-hidden="true"]')).toBeNull();

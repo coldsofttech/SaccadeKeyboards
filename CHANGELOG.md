@@ -4,11 +4,12 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-23
+
 ### Added
 
 - `createKeyboardModel` in `@coldsofttech/saccade-keyboards/core`: the state and rules of the keyboard (shift, caps lock, AltGr, layers, Num Lock, the currency row) without markup or any framework. `useKeyboard` is now a thin hook over it.
 - `registerLanguage`, `languages` and `loadLayout` are also exported from `@coldsofttech/saccade-keyboards/core`.
-
 - `@coldsofttech/saccade-keyboards/vanilla`: `createKeyboard(container, props)` draws a keyboard for a layout object with no framework and returns `{ element, update, destroy }`.
 - `@coldsofttech/saccade-keyboards/element`: the `<saccade-keyboard>` Web Component (Shadow DOM; attributes `theme`, `label`, `font`, `font-size`, `numpad`, `currencypad`; property `layout`; events `saccade-key`, `saccade-close`), and `/css` with its stylesheet text.
 - Language support on every entry point: `createKeyboard` and `<saccade-keyboard>` take `language`, `fallback`, `onReady` and `onError` (events `saccade-ready` and `saccade-error`), a newer language wins over a slower older one, and the React `Keyboard` gets `onReady` and `onError`. `registerLanguage`, `languages` and `loadLayout` are also exported from `/vanilla`.
@@ -24,6 +25,13 @@ All notable changes to this project are documented here. The format follows [Kee
 - **Breaking:** `@coldsofttech/saccade-keyboards/core` no longer uses React. `Keyboard` (for a layout object) and `useKeyboard` moved from it to the main entry, `@coldsofttech/saccade-keyboards`, whose `Keyboard` already takes a `layout` prop. Change the import path; nothing else changes. The language packages are not affected.
 - React and `react-dom` are now optional peer dependencies of `@coldsofttech/saccade-keyboards`, so an app with no React can use `/core`.
 - `npm run check:packages` fails if `/core`, or a language package, can reach React.
+- The symbol above a number, the AltGr character in a key's corner and the faint second character are now drawn by the stylesheet (from `data-char`) instead of being text in the key. A key's text is only the character it types, so its name matches what is on it (WCAG 2.5.3). Layouts and the typed characters are unchanged.
+- The `--saccade-*` colours are read as `var(--saccade-x, default)` through private `--sk-*` variables (see Added).
+- The language packages need `@coldsofttech/saccade-keyboards` 0.2.0 or later (they use its `/core` registry).
+
+### Fixed
+
+- Faint caption text on a key that is on (Num Lock, Shift) had too little contrast on the accent colour; it is now full strength. axe-core finds no violations in a real browser in the light and dark themes, with the number pad, and with Shift and Caps Lock on.
 
 ## [0.1.0] - 2026-10-31
 

@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![React 18 | 19](https://img.shields.io/badge/react-18%20%7C%2019-61dafb.svg)](https://react.dev)
 
-On-screen keyboards for React apps. Show a keyboard for a language next to any text field, so people can type in their own language on a device that has no keyboard for it. Install only the languages you need.
+On-screen keyboards for React, plain JavaScript and Web Components. Show a keyboard for a language next to any text field, so people can type in their own language on a device that has no keyboard for it. Install only the languages you need.
 
 ## Why Saccade Keyboards
 
@@ -16,6 +16,7 @@ On-screen keyboards for React apps. Show a keyboard for a language next to any t
 - **Light and dark.** Built-in themes, your own colours, and a choice of font and key size.
 - **Fits the space.** On a narrow keyboard (800 px or less) each key shows only the character it types, and Shift and AltGr show the rest when pressed.
 - **Accessible.** Every key can be read by a screen reader and used from the keyboard.
+- **Any framework.** React component, a plain `createKeyboard` function, or a `<saccade-keyboard>` Web Component: all three draw the same keyboard from the same code, and the non-React ones never load React.
 - **Small.** React is never bundled, and there are no other dependencies.
 
 ## Languages

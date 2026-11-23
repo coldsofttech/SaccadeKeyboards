@@ -24,6 +24,7 @@ All scripts run from the repository root.
 - Plain JavaScript (`.jsx` for components) with ES modules. Types are written as JSDoc and checked through `jsconfig.json`.
 - Each package declares `exports`, `types`, `files` and `sideEffects: false`, and builds and tests on its own. Its test environment is set in its `vite.config.js`.
 - React and `react-dom` are `peerDependencies` (`^18 || ^19`), never bundled, and optional (the engine in `core` needs no React). `npm run check:packages` fails if a build contains React, or if `core` or a language package can reach it.
+- CI runs the unit tests with React 18 and 19, and `verify:browser` in its own job (it installs Playwright and Chromium; locally, `npm install --no-save playwright` and `npx playwright install chromium`).
 - `npm run verify:browser` (after `npm run build`; needs Playwright with Chromium) drives the examples in a real browser: focus, caret, touch, shadow-root styling and the React wrapper.
 - React-free code (`core`, `vanilla` and `element`) draws into the container it is given, which may be a shadow root: use `container.ownerDocument`, never the global `document`, and import no React. ESLint enforces both.
 - `test-support/` holds the conformance suite and the adapters that run a keyboard through every entry point, and a stub keyboard that proves them.

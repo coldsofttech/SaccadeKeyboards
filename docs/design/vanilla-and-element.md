@@ -1,6 +1,6 @@
 # Design: vanilla JS and Web Component entry points
 
-Status: **Phase 0 approved; Phases 1 to 4 built** (see [Phase 4](#phase-4-field-typing-and-theme-variables)). `/core`
+Status: **complete: Phases 0 to 5 built** (see [Phase 5](#phase-5-release)). `/core`
 is React-free, the model exists and `useKeyboard` runs on it; `/vanilla`, `/element` and `/css` now
 draw a keyboard for a layout object. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
 decisions below; their results are in [Spike results](#spike-results).
@@ -479,3 +479,30 @@ focus; `--saccade-background` on the element recolours the keyboard.
 
 Next: Phase 5, release: axe in a real browser (including the two-character key names and contrast), a React
 18 run, version 0.2.0, docs, and the CI browser job.
+
+## Phase 5: release
+
+Status: **built**. Version 0.2.0 of all seven packages.
+
+- **Accessibility, in a real browser.** `verify:browser` runs axe-core on the element and the function in the light
+  and dark themes, with and without the number pad, and with Shift and Caps Lock on. It found two things, both fixed:
+  1. `label-content-name-mismatch` on keys such as `2` (visible text `@2²`, name `2`). axe compares the name with
+     the visible text even when it is `aria-hidden`. The symbol above a key and the AltGr corner character are now
+     drawn by the stylesheet from `data-char` (a `ghost` span), so a key's text is only what it types. This changed
+     three older assertions that read `textContent` (`!1`, `eé`, `$4€`); they now check the text and `data-char`.
+  2. `color-contrast` on the faint caption of a key that is on (`Num`, 3.2:1 on the accent colour). The caption is full
+     strength there.
+- **React 18.** The whole suite (336 tests) and the browser check's React app pass with React 18.3.1 (and 19.3.1). CI
+  already ran the unit tests with React 18; the browser job runs with the repository's React.
+- **Versions.** All seven packages are 0.2.0. The language packages' peer dependency on the keyboards package is
+  `^0.2.0` because their `/register` entry needs its `/core` registry.
+- **CI.** A `browser` job builds, installs Playwright and Chromium and runs `verify:browser`; it is part of the single
+  required `ci` check.
+- **Docs.** READMEs show the three entry points, the changelog has a 0.2.0 section (with the breaking `/core` move),
+  and the language packages show `/register`.
+
+**What is deliberately not done:** IME composition (see Phase 4), and a React `Keyboard` that shares the controller's
+language loader (its `fallback` is a React node).
+
+Release steps for the maintainer: merge the phase branches in order (or squash them), then tag each package as
+`<name>@0.2.0` as `release.yml` expects, keyboards first because the language packages depend on it.

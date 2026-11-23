@@ -50,7 +50,7 @@ import { resolveField, typeInto } from './typeInto.js';
  */
 
 /** The lighter character of a two-character key; a narrow keyboard hides it until it is typed. */
-const hint = `${styles.secondary} ${styles.hint}`;
+const hint = `${styles.secondary} ${styles.hint} ${styles.ghost}`;
 
 const TOKENS = new Map([
   ['background', '--saccade-background'],
@@ -117,6 +117,18 @@ export function createKeyboard(container, props) {
   }
   const shell = createShell(container, props);
   const { root, h } = shell;
+
+  /**
+   * A character that is only there to be seen, such as the symbol above a number. The stylesheet
+   * draws it from `data-char`, so it is not text in the page: a screen reader, and the check that a
+   * name contains the visible text (WCAG 2.5.3), see only the character the key types.
+   *
+   * @param {string} char
+   * @param {string} className
+   * @param {boolean} [hidden] Hide it from a screen reader too (outside the stack, which is hidden).
+   */
+  const ghost = (char, className, hidden = false) =>
+    h('span', { class: className, 'data-char': char, ...(hidden && { 'aria-hidden': 'true' }) });
   /** @type {ReturnType<typeof createKeyboardModel> | null} */
   let model = null;
   /** What the keyboard shows: a status while a language loads or fails, or the keys. */
@@ -186,15 +198,15 @@ export function createKeyboard(container, props) {
         h(
           'span',
           { class: styles.stack, 'aria-hidden': 'true' },
-          h('span', { class: shift === 'once' ? null : hint }, key.shift),
-          h('span', { class: shift === 'once' ? hint : null }, key.value),
+          shift === 'once' ? h('span', null, key.shift) : ghost(key.shift ?? '', hint),
+          shift === 'once' ? ghost(key.value, hint) : h('span', null, key.value),
         ),
       );
     } else {
       content.push(text);
     }
     if (key.type === 'text' && key.altgr && !altGr) {
-      content.push(h('span', { class: styles.altgr, 'aria-hidden': 'true' }, key.altgr));
+      content.push(ghost(key.altgr, `${styles.altgr} ${styles.ghost}`, true));
     }
     element.replaceChildren(...content);
   }
