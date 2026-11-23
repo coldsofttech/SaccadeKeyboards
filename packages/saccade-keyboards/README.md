@@ -154,6 +154,8 @@ registerLanguage('en', () => import('@coldsofttech/saccade-en'));
 createKeyboard(container, { language: 'en', onKey, onReady, onError });
 ```
 
+- `field` (attribute `for` on the element) types into an input or textarea for you: `createKeyboard(container, { language: 'en', field: '#note' })` or `<saccade-keyboard language="en" for="#note">`. A selector is looked up from the keyboard outward, past shadow roots; to reach a field inside another component's shadow root, set the element's `field` property to the input itself. Each key is applied at the caret (a selection is replaced), the value is set the way a user's typing would set it (so a framework's controlled input sees it), and a bubbling `input` event fires. Enter does nothing in a one-line input, `maxlength` is kept, and a disabled or read-only field is left alone. `onKey` is still called.
+- `--saccade-background`, `--saccade-key`, `--saccade-key-text`, `--saccade-border`, `--saccade-accent` and `--saccade-accent-text` set on the element (or any parent) are the colours the theme starts from: `saccade-keyboard { --saccade-accent: rebeccapurple; }`. A `theme` object still wins.
 - `onReady(layout)` (event `saccade-ready`) runs when the language has loaded; `onError(error)` (event `saccade-error`) when it could not, and the keyboard shows the message. A `layout` prop wins over `language`.
 - Changing `language` while one is loading keeps only the latest: a slow older one never replaces it. The `fallback` shows while the new layout loads.
 - `registerLanguage`, `languages` and `loadLayout` are exported from `/vanilla` as well as `/core` and the main entry; they share one registry.

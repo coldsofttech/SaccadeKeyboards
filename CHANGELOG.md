@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows [Kee
 - `@coldsofttech/saccade-keyboards/element`: the `<saccade-keyboard>` Web Component (Shadow DOM; attributes `theme`, `label`, `font`, `font-size`, `numpad`, `currencypad`; property `layout`; events `saccade-key`, `saccade-close`), and `/css` with its stylesheet text.
 - Language support on every entry point: `createKeyboard` and `<saccade-keyboard>` take `language`, `fallback`, `onReady` and `onError` (events `saccade-ready` and `saccade-error`), a newer language wins over a slower older one, and the React `Keyboard` gets `onReady` and `onError`. `registerLanguage`, `languages` and `loadLayout` are also exported from `/vanilla`.
 - Each language package (`saccade-en`, `-es`, `-fr`, `-hi`, `-te`, `-ur`) has a `/register` entry: `import '@coldsofttech/saccade-en/register'` makes `language="en"` work.
+- `field` on `createKeyboard` (and `for` / `field` on `<saccade-keyboard>`, and on the React components): types each key into an input or textarea at its caret and fires an `input` event, also for a field a framework controls or one in another shadow root.
+- `--saccade-*` custom properties set on the element or a parent are now the colours the theme starts from, in the light and the dark theme. Before, the keyboard's own colours always won.
 - `examples/vanilla`: an app with no React that types into a field with the element and with `createKeyboard`.
 - `npm run verify:browser` checks all three entry points in Chromium (needs Playwright).
 

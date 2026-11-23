@@ -1,6 +1,6 @@
 # Design: vanilla JS and Web Component entry points
 
-Status: **Phase 0 approved; Phases 1 to 3 built** (see [Phase 3](#phase-3-languages)). `/core`
+Status: **Phase 0 approved; Phases 1 to 4 built** (see [Phase 4](#phase-4-field-typing-and-theme-variables)). `/core`
 is React-free, the model exists and `useKeyboard` runs on it; `/vanilla`, `/element` and `/css` now
 draw a keyboard for a layout object. The spikes in [spikes/phase0](spikes/phase0/run.mjs) back the
 decisions below; their results are in [Spike results](#spike-results).
@@ -445,3 +445,37 @@ shows the install message; the page still has no React.
    layout arrives. Keeping the old keys would need a decision about the focus; left for Phase 4.
 
 Next: Phase 4, features and edge cases: `field` / `for` typing, theme variables, IME and touch.
+
+## Phase 4: field typing and theme variables
+
+Status: **built**.
+
+- **`field`** (`for` on the element) on `createKeyboard`: `typeInto(field, key)` applies the key at the caret
+  with `applyKey`, sets the value through the element's own `value` setter (so a framework's controlled
+  input sees it), restores the caret, and dispatches a bubbling, composed `InputEvent` with the right
+  `inputType`. `resolveField` finds a selector from the keyboard's root and then outward through each
+  shadow root's host, so `for="#note"` reaches the page from inside the element's shadow root; the `field`
+  property takes an element in any root. `onKey` is still called, after the field is changed.
+- **Edge cases, each with a test:** Enter does nothing in a one-line input; `maxlength` stops a key that
+  would pass it but not a replacement or backspace; disabled and read-only fields are left alone; a type
+  with no selection (`number`, `email`) types at the end; backspace removes a whole code point; a
+  backspace that changes nothing fires no event; a bad selector finds nothing and does not throw.
+- **Theme variables:** the keyboard's own colours were set on `.root`, so a `--saccade-*` variable on the page
+  or the host could never win (the Phase 2 finding). `.root` and `.dark` now define private `--sk-*`
+  variables as `var(--saccade-x, default)`, and the rules use those. A variable set on the element or an
+  ancestor is the starting colour in both themes, and a `theme` object (set inline) still wins.
+- **Number pad, currency pad, fonts, the narrow layout:** these were built in Phase 2 with their own
+  conformance tests on all three entry points; Phase 4 adds nothing there except that the focus check in
+  Chromium also covers a layer change after a number pad is on.
+- **IME: decided not to handle.** An on-screen key cannot know that the field is in the middle of a
+  composition, and the browser gives no way to ask. Keys type at the caret as a real key would; an app that
+  needs composition should not combine the two.
+
+**Checked in Chromium:** `for="#field"` types from the element's shadow root into the page; the `field`
+property types into an input in another component's shadow root, fires one `input` event and keeps the
+focus; `--saccade-background` on the element recolours the keyboard.
+
+**Size.** Field typing and the variables add about 0.5 kB: the root is 5.93 kB (limit now 6.5), `/vanilla` 5.44 kB (limit 6) and `/element` 6.79 kB (limit 7.5).
+
+Next: Phase 5, release: axe in a real browser (including the two-character key names and contrast), a React
+18 run, version 0.2.0, docs, and the CI browser job.

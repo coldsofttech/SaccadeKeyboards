@@ -24,9 +24,10 @@ function type(key) {
   field.setSelectionRange(selection.start, selection.end);
 }
 
-// The element: `language="en"` is in the markup; each key comes out as an event.
+// The element: `language="en"` and `for="#field"` are in the markup, so it types into the field
+// by itself. Each key is also an event.
 const element = document.getElementById('element');
-element.addEventListener('saccade-key', (event) => type(event.detail));
+element.addEventListener('saccade-key', (event) => console.log('key', event.detail));
 element.addEventListener('saccade-close', () => console.log('hide'));
 
 // The function: the same keyboard drawn into an ordinary element.

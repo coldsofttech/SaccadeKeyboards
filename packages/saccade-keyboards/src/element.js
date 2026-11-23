@@ -8,7 +8,8 @@ import { createKeyboard } from './vanilla/createKeyboard.js';
  *
  * Properties: `layout` (a layout object) and `theme` (also an object of colours); the keyboard waits
  * for a `layout` or a `language`. Attributes: `language` (a registered code, such as `en`), `fallback`
- * (text shown while it loads), `theme` (`light` or `dark`), `label`, `font`, `font-size`, `numpad` and
+ * (text shown while it loads), `for` (a selector for the input or textarea to type into; the `field`
+ * property takes the element itself), `theme` (`light` or `dark`), `label`, `font`, `font-size`, `numpad` and
  * `currencypad` (both off unless the attribute is there). Events, with the argument in `detail`:
  * `saccade-key` (`{ type, value? }`), `saccade-close`, `saccade-ready` (the layout, once a language has
  * loaded) and `saccade-error` (the `Error`). The events bubble out of the shadow root.
@@ -20,6 +21,7 @@ export const defineKeyboardElement = defineElement({
   ready: (props) => Boolean(props.layout || props.language),
   attributes: {
     language: 'language',
+    for: 'field',
     fallback: 'fallback',
     theme: 'theme',
     label: 'label',

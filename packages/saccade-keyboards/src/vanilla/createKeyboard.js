@@ -5,6 +5,7 @@ import { loadLayout } from '../core/registry.js';
 import { CURRENCY_SIGNS } from '../core/typed.js';
 import styles from '../Keyboard.module.css';
 import { createShell } from './shell.js';
+import { resolveField, typeInto } from './typeInto.js';
 
 /** @typedef {import('../core/layout.js').Layout} Layout */
 /** @typedef {import('../core/layout.js').Key} Key */
@@ -29,6 +30,9 @@ import { createShell } from './shell.js';
  * @property {Layout} [layout] The layout; the first layer is shown first. It wins over `language`.
  * @property {string} [language] A registered language code, such as `en`. The layout is loaded the
  *   first time it is needed; a code with no package says which one to install.
+ * @property {HTMLElement | string} [field] An input or textarea (or a selector for one, looked up from
+ *   the keyboard outward) that each key is typed into at its caret, with an `input` event. `onKey`
+ *   is still called. Without it the keyboard types nothing.
  * @property {string | Node} [fallback] Shown while a language loads: text, or an element.
  * @property {(layout: Layout) => void} [onReady] A language has loaded and the keyboard is shown.
  * @property {(key: KeyPress) => void} onKey A key was pressed (the space key types a space).
@@ -307,7 +311,11 @@ export function createKeyboard(container, props) {
     else {
       model = createKeyboardModel({
         layout,
-        onKey: (key) => shell.emit('onKey', key),
+        onKey: (key) => {
+          const field = resolveField(keyboardProps().field, root);
+          if (field) typeInto(field, key);
+          shell.emit('onKey', key);
+        },
         onClose: () => shell.emit('onClose'),
       });
       shell.cleanup(model.subscribe(render));

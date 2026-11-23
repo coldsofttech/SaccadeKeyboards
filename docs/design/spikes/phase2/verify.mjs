@@ -189,7 +189,7 @@ try {
     return {
       display: getComputedStyle(group).display,
       lightDom: group.getRootNode() === document,
-      tokens: getComputedStyle(group).getPropertyValue('--saccade-accent').trim(),
+      tokens: getComputedStyle(group).getPropertyValue('--sk-accent').trim(),
     };
   });
   check(
@@ -278,19 +278,53 @@ try {
     JSON.stringify(changed),
   );
 
-  // Page-level custom properties do not reach the keyboard: its root sets its own colours.
+  // Custom properties on the host are the colours the theme starts from.
   const override = await page.evaluate(() => {
     const el = document.querySelector('#element');
     el.setAttribute('theme', 'light');
-    document.documentElement.style.setProperty('--saccade-background', 'rgb(255, 0, 0)');
-    return getComputedStyle(el.shadowRoot.querySelector('[role="group"]')).backgroundColor;
+    el.style.setProperty('--saccade-background', 'rgb(255, 0, 0)');
+    const set = getComputedStyle(el.shadowRoot.querySelector('[role="group"]')).backgroundColor;
+    el.style.removeProperty('--saccade-background');
+    return set;
   });
   check(
-    'theming (finding): a page-level --saccade-background does not recolour the element',
-    override !== 'rgb(255, 0, 0)',
-    `the keyboard is ${override}: only the theme prop or attribute sets colours`,
-    true,
+    "theming: --saccade-background on the element sets the keyboard's background",
+    override === 'rgb(255, 0, 0)',
+    override,
   );
+
+  // A field inside another component's shadow root, named by the `field` property.
+  const foreign = await page.evaluate(() => {
+    const holder = document.createElement('div');
+    document.body.append(holder);
+    const shadow = holder.attachShadow({ mode: 'open' });
+    const input = document.createElement('input');
+    shadow.append(input);
+    const el = document.querySelector('#element');
+    el.field = input;
+    input.focus();
+    let fired = 0;
+    input.addEventListener('input', () => fired++);
+    const q = [...el.shadowRoot.querySelectorAll('button')].find((b) =>
+      /^[a-z0-9]$/.test(b.getAttribute('aria-label') ?? ''),
+    );
+    q.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+    q.click();
+    return {
+      value: input.value,
+      typed: q.getAttribute('aria-label'),
+      fired,
+      focused: shadow.activeElement === input,
+    };
+  });
+  check(
+    'field: a field in another shadow root gets the key, an input event, and keeps the focus',
+    foreign.value === foreign.typed && foreign.fired === 1 && foreign.focused,
+    JSON.stringify(foreign),
+  );
+  await page.evaluate(() => {
+    document.querySelector('#element').field = '#field';
+  });
 
   // Accessibility.
   await page.addScriptTag({ path: join(root, 'node_modules/axe-core/axe.min.js') });
